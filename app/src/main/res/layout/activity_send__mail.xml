@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="300dp"
+    tools:context="com.kyudong.termi.Send_Mail">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/sendToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="#f5f5f5"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        android:minHeight="?attr/actionBarSize"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true">
+
+        <ImageView
+            android:layout_width="12.7dp"
+            android:layout_height="22.3dp"
+            android:src="@drawable/back"/>
+
+        <TextView
+            android:layout_gravity="end"
+            android:layout_width="45dp"
+            android:layout_height="30dp"
+            android:text="전송"
+            android:textColor="#ffa000"
+            android:paddingRight="15.7dp"
+            android:textSize="16dp"
+            android:paddingTop="3dp" />
+
+    </android.support.v7.widget.Toolbar>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_alignParentTop="false"
+        android:layout_alignParentStart="false"
+        android:layout_below="@+id/sendToolbar"
+        android:gravity="center_vertical|left"
+        android:background="#fafafa"
+        android:id="@+id/linear">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="받는 사람 :"
+            android:id="@+id/textView5"
+            android:paddingLeft="19dp" />
+
+        <EditText
+            android:layout_width="215dp"
+            android:layout_height="wrap_content"
+            android:inputType="phone"
+            android:ems="10"
+            android:id="@+id/editText"
+            android:background="@null"
+            android:layout_below="@+id/sendToolbar"
+            android:layout_alignStart="@+id/sendToolbar"
+            android:layout_toStartOf="@+id/button2"
+            android:layout_marginLeft="10dp" />
+
+        <ImageView
+            android:background="@drawable/oval_11_line_line"
+            android:layout_width="25.3dp"
+            android:layout_height="25.3dp"
+            android:id="@+id/imageView2"
+            android:layout_marginLeft="35dp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:id="@+id/linearLayout"
+        android:layout_alignParentBottom="false"
+        android:layout_below="@+id/linear"
+        android:gravity="center">
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="답장 받기"
+            android:id="@+id/radioButton" />
+
+        <RadioButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="답장 받지 않기"
+            android:id="@+id/radioButton2"
+            android:layout_marginLeft="40dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/linearLayout"
+        android:layout_alignStart="@+id/linearLayout">
+
+        <EditText
+            android:background="@null"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/editText2" />
+    </LinearLayout>
+</RelativeLayout>

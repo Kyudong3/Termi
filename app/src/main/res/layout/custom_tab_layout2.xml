@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+    android:gravity="center_horizontal">
+    <TextView
+        android:id="@+id/tabText2"
+        android:layout_gravity="center"
+        android:layout_width="70dp"
+        android:layout_height="40dp"
+        android:paddingTop="9dp"
+        android:text="발신함"
+        android:textSize="20dp"
+        android:textAlignment="center"
+        android:textColor="#000000"/>
+    <ImageView
+        android:id="@+id/mail2"
+        android:layout_marginTop="14dp"
+        android:layout_width="22.7dp"
+        android:layout_height="16.7dp"
+        android:background="@drawable/pagebihaeng"
+        android:layout_toRightOf="@+id/tabText2" />
+</RelativeLayout>

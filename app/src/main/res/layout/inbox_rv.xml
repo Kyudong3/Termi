@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="72dp" >
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_centerHorizontal="true"
+            android:gravity="center_vertical|left">
+
+            <ImageView
+                android:layout_width="8.7dp"
+                android:layout_height="8.7dp"
+                android:background="@drawable/light_circle"
+                android:layout_marginLeft="16dp"
+                android:id="@+id/circleImageView" />
+
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:id="@+id/imageView3"
+                android:layout_marginLeft="8dp" />
+
+            <TextView
+                android:layout_width="258.3dp"
+                android:layout_height="46.7dp"
+                android:text="sunwi"
+                android:id="@+id/textView6"
+                android:textColor="#8a000000"
+                android:layout_marginLeft="15dp"
+                android:textSize="14dp"
+                android:gravity="center_vertical" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="New Text"
+                android:id="@+id/Time"
+                android:visibility="gone" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="New Text"
+                android:id="@+id/IsRead"
+                android:visibility="gone" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="New Text"
+                android:id="@+id/SeqNo"
+                android:visibility="gone" />
+
+        </LinearLayout>
+    </RelativeLayout>
+</RelativeLayout>

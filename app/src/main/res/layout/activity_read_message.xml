@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.kyudong.termi.ReadMessage">
+
+    <android.support.v7.widget.Toolbar
+
+        android:id="@+id/readMessageToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:background="#f5f5f5">
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="25dp"
+            android:src="@drawable/back"
+            android:id="@+id/backImageView" />
+
+        <TextView
+            android:layout_gravity="end"
+            android:layout_width="55dp"
+            android:layout_height="30dp"
+            android:text="삭제"
+            android:textColor="#ffa000"
+            android:paddingRight="15.7dp"
+            android:textSize="16dp"
+            android:paddingTop="3dp"
+            android:id="@+id/deleteBtnTxv" />
+
+    </android.support.v7.widget.Toolbar>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="56dp"
+        android:text="답장하기"
+        android:id="@+id/button"
+        android:background="@drawable/rectangle_235_copy"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:textSize="16dp"
+        android:textColor="#ffffff" />
+
+    <TextView
+        android:layout_width="296dp"
+        android:layout_height="250dp"
+        android:id="@+id/readContentTxv"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/button" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="23.7dp"
+        android:id="@+id/timeTxv"
+        android:layout_marginRight="16.3dp"
+        android:layout_below="@+id/readMessageToolbar"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="4.7dp"
+        android:textSize="13dp"
+        android:textColor="#33000000" />
+
+    <ImageView
+        android:layout_width="176.6dp"
+        android:layout_height="144.8dp"
+        android:id="@+id/readImageIcon"
+        android:layout_below="@+id/timeTxv"
+        android:layout_alignParentEnd="true"
+        android:layout_marginRight="95.5dp"
+        android:layout_marginTop="12.3dp" />
+
+</RelativeLayout>
