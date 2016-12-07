@@ -11,7 +11,7 @@ public class InBoxRvItem implements Serializable{
     int image;
     String time;
     String isRead;
-    String canReaply;
+    String canReply;
     int seqNo;
     String role;
     String msgType;

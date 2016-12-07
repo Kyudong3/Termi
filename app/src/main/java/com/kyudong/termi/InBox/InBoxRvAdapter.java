@@ -70,6 +70,7 @@ public class InBoxRvAdapter extends RecyclerView.Adapter<InBoxRvHolder> {
                 String isRead = inBoxRvItemArrayList.get(pos).isRead;
                 String role = inBoxRvItemArrayList.get(pos).role;
                 String msgType = inBoxRvItemArrayList.get(pos).msgType;
+                String canReply = inBoxRvItemArrayList.get(pos).canReply;
 
                 Intent intent = new Intent(v.getContext(), ReadMessage.class);
                 intent.putExtra("seqNo", seqNo);
@@ -80,7 +81,8 @@ public class InBoxRvAdapter extends RecyclerView.Adapter<InBoxRvHolder> {
                 intent.putExtra("msgType", msgType);
                 intent.putExtra("authorization", token);
                 intent.putExtra("pos", pos);
-                intent.putExtra("list", inBoxRvItemArrayList);
+                intent.putExtra("canReply", canReply);
+                //intent.putExtra("token", token);
                 intent.putExtra("int", 0);
 
                 Log.e("CALLED", ""+pos + "   " + seqNo + " size : " + inBoxRvItemArrayList.size());

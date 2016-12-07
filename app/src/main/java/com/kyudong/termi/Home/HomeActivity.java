@@ -24,6 +24,8 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
@@ -63,7 +65,6 @@ public class HomeActivity extends AppCompatActivity
     private Toolbar toolbar;
     private ImageView imageView;
     private NavigationView nav_View;
-    private FloatingActionButton fab;
     private TabPagerAdapter pagerAdapter;
 
     private TextView textTab1;
@@ -80,6 +81,12 @@ public class HomeActivity extends AppCompatActivity
 
     int c;
 
+    // 플로팅 버튼 변수들 //
+    private Boolean isFabOpen = false;
+    private FloatingActionButton fab, fab1, fab2, fab3;
+    private Animation fab_open, fab_close, rotate_forward, rotate_backward;
+
+    // OkHttp 통신 변수들 //
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     private OkHttpClient client = new OkHttpClient();
 
@@ -91,34 +98,62 @@ public class HomeActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == REQUEST_CODE) {
             if(resultCode == RESULT_OK) {
-                if(data != null) {
-                    int position = data.getExtras().getInt("pos");
-                    int a = data.getExtras().getInt("int");
+               if(data != null) {
 
-                    if(a==0) {
-                        Fragment frag = getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.homeViewPager + ":" + a);
-                        Log.e("CALLED", "tag is : please inbox");
-                        frag.onActivityResult(requestCode, resultCode, data);
-                    }
+                   int position = data.getExtras().getInt("pos");
+                   int a = data.getExtras().getInt("int");
+                   String aa = data.getStringExtra("a");
 
-                    if(a==1) {
-                        Fragment frag = getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.homeViewPager + ":" + a);
-                        Log.e("CALLED", "tag is : please outbox");
-                        frag.onActivityResult(requestCode, resultCode, data);
-                    }
-                }
+                   // 삭제버튼을 눌렀을 때 //
+                   if(aa.equals("b")) {
+                       if(a==0) {
+                           Fragment frag = getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.homeViewPager + ":" + a);
+                           Log.e("CALLED", "tag is : please inbox");
+                           frag.onActivityResult(requestCode, resultCode, data);
+                       }
+                       if(a==1) {
+                           Fragment frag = getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.homeViewPager + ":" + a);
+                           Log.e("CALLED", "tag is : please outbox");
+                           frag.onActivityResult(requestCode, resultCode, data);
+                       }
+                   // 백버튼,   백   ,  답장하기 눌럿을 때 //
+                   } else if(aa.equals("a")) {
+                       if(a==0) {
+                           Fragment frag = getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.homeViewPager + ":" + a);
+                           Log.e("CALLED", "tag is : please inbox");
+                           frag.onActivityResult(requestCode, resultCode, data);
+                       }
+
+                       if(a==1) {
+                           Fragment frag = getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.homeViewPager + ":" + a);
+                           Log.e("CALLED11", "tag is : please outbox");
+                           frag.onActivityResult(requestCode, resultCode, data);
+                       }
+                   }
+
+               }
             }
         } else if(requestCode == REQUEST_CODE2) {
             if(resultCode == RESULT_OK) {
                 if(data!=null) {
+                    String content = data.getStringExtra("content");
+                    String messageType = data.getStringExtra("messageType");
+
                     Fragment frag = getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.homeViewPager + ":" + 1);
-                    Log.e("CALLED", "send tag is : please go to outbox");
+                    Log.e("CALLED99999", "send tag is : please go to outbox");
                     frag.onActivityResult(requestCode, resultCode, data);
                 }
             }
         }
-        Log.e("CALLED", "OnActivity Result");
-
+//        else {
+//            if(resultCode == RESULT_OK) {
+//                if(data != null) {
+//                    Fragment frag = getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.homeViewPager + ":" + 1);
+//                    Log.e("CALLED12351", "reply reply reply reply reply reply reply reply reply reply reply");
+//                    frag.onActivityResult(requestCode, resultCode, data);
+//                }
+//            }
+//        }
     }
 
     @Override
@@ -128,9 +163,9 @@ public class HomeActivity extends AppCompatActivity
 
         Intent intent = getIntent();
         if(intent != null) {
-
             token = intent.getStringExtra("authorization");
         }
+
 
         imageView = (ImageView) findViewById(R.id.menuImage);
         toolbar = (Toolbar)findViewById(R.id.homeToolbar);
@@ -143,19 +178,34 @@ public class HomeActivity extends AppCompatActivity
             getWindow().setStatusBarColor(Color.parseColor("#e0e0e0"));
         }
 
-        fab = (FloatingActionButton)findViewById(R.id.fab);
+//        fab = (FloatingActionButton)findViewById(R.id.fab);
+//        fab1 = (FloatingActionButton) findViewById(R.id.fab1);
+//        fab2 = (FloatingActionButton) findViewById(R.id.fab2);
+        fab_open = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open);
+        fab_close = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_close);
 
-        //fab.setBackgroundResource(R.drawable.fab_shape_rectangle_266_rectangle_267_triangle_12);
-        //fab.setImageResource(R.drawable.fab_shape_rectangle_266_rectangle_267_triangle_12);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent2 = new Intent(getApplicationContext(), Send_Mail.class);
-                intent2.putExtra("authorization", token);
-                startActivityForResult(intent2, REQUEST_CODE2);
-                //startActivity(intent2);
-            }
-        });
+
+//        fab.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                int id = view.getId();
+//                switch (id) {
+//                    case R.id.fab:
+//                        animateFAB();
+//                        break;
+//                    case R.id.fab1:
+//                        Log.d("Raj", "Fab 1");
+//                        break;
+//                    case R.id.fab2:
+//                        Log.d("Raj", "Fab 2");
+//                        break;
+//                }
+////                Intent intent2 = new Intent(getApplicationContext(), Send_Mail.class);
+////                intent2.putExtra("authorization", token);
+////                startActivityForResult(intent2, REQUEST_CODE2);
+//                //startActivity(intent2);
+//            }
+//        });
 
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -188,25 +238,66 @@ public class HomeActivity extends AppCompatActivity
         mViewPager.setOffscreenPageLimit(3);
 
         mTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
-
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 mViewPager.setCurrentItem(tab.getPosition());
+                Toast.makeText(getApplicationContext(),"Pos onTabSelected: "+tab.getPosition(),Toast.LENGTH_SHORT).show();
                 if(tab.getPosition()==0) {
-                    ImageView imageView = (ImageView) tab.getCustomView().findViewById(R.id.mail1);
+                    ImageView asdf = (ImageView) tab.getCustomView().findViewById(R.id.imageView5);
+                    asdf.setImageResource(R.drawable.hometabreceive_on);
+                    //tab.setCustomView(R.layout.custom_tab_layout);
+                } else if(tab.getPosition()==1) {
+                    ImageView asdf = (ImageView) tab.getCustomView().findViewById(R.id.imageView6);
+                    asdf.setImageResource(R.drawable.hometabsend_on);
+                    //tab.setCustomView(R.layout.custom_tab_layout2);
                 }
-
             }
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
+                if(tab.getPosition()==0) {
+                    ImageView asdf = (ImageView) tab.getCustomView().findViewById(R.id.imageView5);
+                    asdf.setImageResource(R.drawable.hometabreceive_off);
+                    //tab.setCustomView(R.layout.custom_tab_layout4);
+                } else if(tab.getPosition()==1) {
+                    ImageView asdf = (ImageView) tab.getCustomView().findViewById(R.id.imageView6);
+                    asdf.setImageResource(R.drawable.tabsendoff);
+                    //tab.setCustomView(R.layout.custom_tab_layout3);
+                }
             }
 
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
             }
         });
+
+
+
     }
+
+//    public void animateFAB() {
+//        if (isFabOpen) {
+//  //          fab.startAnimation(rotate_backward);
+//            fab1.startAnimation(fab_close);
+//            fab2.startAnimation(fab_close);
+//            //fab3.startAnimation(fab_close);
+//            fab1.setClickable(false);
+//            fab2.setClickable(false);
+//            //fab3.setClickable(false);
+//            isFabOpen = false;
+//            Log.d("Raj", "close");
+//        } else {
+////            fab.startAnimation(rotate_forward);
+//            fab1.startAnimation(fab_open);
+//            fab2.startAnimation(fab_open);
+//            //fab3.startAnimation(fab_open);
+//            fab1.setClickable(true);
+//            fab2.setClickable(true);
+//            //fab3.setClickable(true);
+//            isFabOpen = true;
+//            Log.d("Raj", "open");
+//        }
+//    }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {

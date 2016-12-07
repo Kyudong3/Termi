@@ -118,10 +118,8 @@ public class Send_Mail extends AppCompatActivity {
         sendBtnTxv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                dialog = new CustomDialog(Send_Mail.this);
+                dialog = new CustomDialog(Send_Mail.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
                 dialog.show();
-
             }
         });
 
@@ -201,19 +199,18 @@ public class Send_Mail extends AppCompatActivity {
         public CustomDialog(Context context, int themeResId) {
             super(context, themeResId);
 
-            //init(themeResId);
+            init();
         }
 
         private void init() {
-            this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+            //this.requestWindowFeature(Window.FEATURE_NO_TITLE);
             setContentView(R.layout.custom_dialog);
 
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+            //getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
 
-            getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-
-            angel = (ImageView) findViewById(R.id.angel);
-            devil = (ImageView) findViewById(R.id.devil);
+            angel = (ImageView) findViewById(R.id.sendauri);
+            devil = (ImageView) findViewById(R.id.sendagma);
 
             llll = (LinearLayout) findViewById(R.id.llll);
 
@@ -230,7 +227,6 @@ public class Send_Mail extends AppCompatActivity {
                         Jobj.put("messageType", messageType);
                         Jobj.put("canReply", canReply);
                         postJson = Jobj.toString();
-
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }

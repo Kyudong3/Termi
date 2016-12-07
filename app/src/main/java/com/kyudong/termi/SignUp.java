@@ -11,6 +11,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.FirebaseInstanceIdService;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
@@ -34,7 +36,11 @@ public class SignUp extends AppCompatActivity {
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     private OkHttpClient client = new OkHttpClient();
 
+    private MyFirebaseInstanceIDService firebaseToken;
+
     private String signUpPostJson;
+
+    String token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +57,9 @@ public class SignUp extends AppCompatActivity {
 //        String id = signInId.getText().toString();
 //        String pwd = signInPwd.getText().toString();
 
+        token = FirebaseInstanceId.getInstance().getToken();
+
+        Log.e("firebase", "token is : " + token);
 
         TelephonyManager tMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         String myPhoneNumber = tMgr.getLine1Number();
@@ -83,6 +92,7 @@ public class SignUp extends AppCompatActivity {
                     idPwdTelObject.put("id", signInId.getText().toString());
                     idPwdTelObject.put("password", signInPwd.getText().toString());
                     idPwdTelObject.put("telephone", myPhoneNumber);
+                    idPwdTelObject.put("fcmToken", token);
 
                     signUpPostJson = idPwdTelObject.toString();
 

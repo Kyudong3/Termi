@@ -77,27 +77,46 @@ public class Outbox extends Fragment {
         if(requestCode == REQUEST_CODE) {
             if(data != null) {
                 int pos = data.getExtras().getInt("pos");
-                Log.e("CALLED2", "outbox : " + " size : " + outBoxRvItemArrayList.size());
+                String aa = data.getStringExtra("a");
+                int a = data.getExtras().getInt("int");
 
+//                Log.e("CALLED2", "outbox : " + " size : " + outBoxRvItemArrayList.size());
+//                Log.e("CALLED", "aa + a : " + a + "      " + aa + pos);
+
+                if(aa.equals("b")) {
 ////////////////////////////////////////////방법 1//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//                outBoxRvItemArrayList.remove(pos);
-//                adapter.notifyItemRemoved(pos);
+                    outBoxRvItemArrayList.remove(pos);
+                    adapter.notifyItemRemoved(pos);
+                    Log.e("CALLED", "fucking3");
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-///////////////////////////////////////////방법 2///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                outBoxRvItemArrayList.clear();
-                GetInBox getInBox = new GetInBox();
-                try {
-                    getInBox.doGetRequest("http://52.78.240.168/api/messageList/send");
-                } catch (IOException e) {
-                    e.printStackTrace();
+               /// 백버튼, 백 , 답장하기 때 ////
+                } else if(aa.equals("a")) {
+                    int diff = data.getExtras().getInt("diff");
+                    if(diff==0) {           // 그냥 백버튼 백일 때
+                        Log.e("CALLED NOTHING", "NOOOOOTTTTHHHHHIIIINNNNGGGG");
+                    } else if(diff==1) {    // 답장하기이면
+                        outBoxRvItemArrayList.clear();
+                        GetInBox getInBox = new GetInBox();
+                        try {
+                            getInBox.doGetRequest("http://52.78.240.168/api/messageList/send");
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        Log.e("CALLED1616", "fucking4");
+                    }
                 }
+///////////////////////////////////////////방법 2///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//                outBoxRvItemArrayList.clear();
+//                GetInBox getInBox = new GetInBox();
+//                try {
+//                    getInBox.doGetRequest("http://52.78.240.168/api/messageList/send");
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-                Log.e("CALLED2", "outbox : " + " size : " + outBoxRvItemArrayList.size());
+                //Log.e("CALLED3", "outbox : " + " size : " + outBoxRvItemArrayList.size());
             }
         } else if(requestCode == REQUEST_CODE2) {
-            if(data != null) {
-
                 outBoxRvItemArrayList.clear();
                 GetInBox getInBox = new GetInBox();
                 try {
@@ -105,10 +124,18 @@ public class Outbox extends Fragment {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                Log.e("CALLED2", "adding list in outbox success!!");
+                Log.e("CALLED44", "adding list in outbox success!!");
+        } else {
+            Log.e("CALLED5", "adding list in outbox success!!");
+            outBoxRvItemArrayList.clear();
+            GetInBox getInBox = new GetInBox();
+            try {
+                getInBox.doGetRequest("http://52.78.240.168/api/messageList/send");
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        }
 
+        }
     }
 
     public class SimpleDividerItemDecoration extends RecyclerView.ItemDecoration {
@@ -186,6 +213,7 @@ public class Outbox extends Fragment {
                                     }
                                     outBoxRvItemArrayList.add(item);
                                 }
+
                                 adapter.notifyDataSetChanged();
 
                             } catch (JSONException e) {
