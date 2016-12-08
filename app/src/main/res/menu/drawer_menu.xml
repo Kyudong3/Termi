@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <group android:id="@+id/first" android:checkableBehavior="single" >
         <item
@@ -16,6 +17,7 @@
     <group android:id="@+id/third" android:checkableBehavior="single" >
         <item
             android:id="@+id/notice"
-            android:title="알림" />
+            android:title="알림"
+            app:actionLayout="@layout/switch_compat"/>
     </group>
 </menu>
