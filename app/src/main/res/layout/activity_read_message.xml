@@ -50,8 +50,9 @@
         android:layout_width="296dp"
         android:layout_height="250dp"
         android:id="@+id/readContentTxv"
+        android:layout_below="@+id/readImageIcon"
         android:layout_centerHorizontal="true"
-        android:layout_above="@+id/button" />
+        android:layout_marginTop="20dp" />
 
     <TextView
         android:layout_width="wrap_content"

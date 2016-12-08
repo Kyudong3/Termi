@@ -4,6 +4,7 @@
     android:layout_height="wrap_content">
 
     <RelativeLayout
+        android:background="#fafafa"
         android:layout_width="match_parent"
         android:layout_height="72dp" >
 
@@ -18,7 +19,7 @@
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:id="@+id/imageView32"
-                android:layout_marginLeft="20dp" />
+                android:layout_marginLeft="16dp" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -26,7 +27,7 @@
                 android:text="sunwi"
                 android:id="@+id/textView62"
                 android:textColor="#000000"
-                android:layout_marginLeft="30dp" />
+                android:layout_marginLeft="16.4dp" />
 
             <TextView
                 android:layout_width="wrap_content"

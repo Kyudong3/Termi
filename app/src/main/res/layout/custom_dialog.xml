@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:id="@+id/llll">
-
-
-
-        <ImageView
-            android:layout_width="140dp"
-            android:layout_height="140dp"
-            android:src="@drawable/angel"
-            android:id="@+id/angel" />
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/llll"
+    android:gravity="center"
+    android:background="#CC000000">
 
         <ImageView
-            android:layout_width="140dp"
-            android:layout_height="140dp"
-            android:src="@drawable/devil"
-            android:id="@+id/devil"
+            android:layout_width="141.7dp"
+            android:layout_height="141.7dp"
+            android:src="@drawable/sendauri"
+            android:id="@+id/sendauri" />
+
+        <ImageView
+            android:layout_width="141.7dp"
+            android:layout_height="141.7dp"
+            android:src="@drawable/sendagma"
+            android:id="@+id/sendagma"
             android:layout_marginLeft="25dp" />
 
 </LinearLayout>
