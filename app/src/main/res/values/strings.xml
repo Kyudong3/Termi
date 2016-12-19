@@ -1,4 +1,13 @@
 <resources>
     <string name="app_name"></string>
+    <string name="auto_login">자동로그인</string>
+    <string name="input_id">아이디 입력</string>
+    <string name="input_pwd">비밀번호 입력</string>
+    <string name="sign_up">터미 시작하기</string>
+    <string name="sign_up_id">사용할 아이디</string>
+    <string name="sign_up_pwd">비밀번호</string>
+    <string name="signed_up">가입 완료</string>
+    <string name="inbox">수신함</string>
+    <string name="outbox">발신함</string>
 </resources>
 

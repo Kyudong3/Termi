@@ -3,7 +3,9 @@ package com.kyudong.termi.InBox;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
@@ -13,6 +15,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,10 +26,12 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.kyudong.termi.R;
 import com.kyudong.termi.ReadMessage;
 import com.kyudong.termi.UnRead;
+import com.kyudong.termi.UserToken;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
@@ -42,6 +47,7 @@ import java.util.ArrayList;
 
 public class Inbox extends Fragment {
 
+    private TextView comingMessageTxv;
     private RecyclerView rv;
     private LinearLayoutManager llm;
     private InBoxRvAdapter adapter;
@@ -59,6 +65,9 @@ public class Inbox extends Fragment {
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     private OkHttpClient client = new OkHttpClient();
 
+    private XmasDialog xmasDialog;
+    private int dialogInt;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -67,6 +76,7 @@ public class Inbox extends Fragment {
         token = getActivity().getIntent().getStringExtra("authorization");
 
         //inBoxRvItemArrayList = new ArrayList<>();
+        comingMessageTxv = (TextView) v.findViewById(R.id.comingMessageTxv);
         rv = (RecyclerView) v.findViewById(R.id.inRecyclerView);
         llm = new LinearLayoutManager(getContext());
         llm.setOrientation(LinearLayoutManager.VERTICAL);
@@ -78,8 +88,6 @@ public class Inbox extends Fragment {
 
         rv.addItemDecoration(new SimpleDividerItemDecoration(getContext()));
 
-        Log.e("zzz", token);
-
         GetInBox getInBox = new GetInBox();
         try {
             getInBox.doGetRequest("http://52.78.240.168/api/messageList/receive", token);
@@ -87,9 +95,6 @@ public class Inbox extends Fragment {
             e.printStackTrace();
         }
 
-        //showDialog();
-        //inBoxRvItemArrayList.remove(position);
-        //adapter.notifyItemRemoved(position);
         return v;
     }
 
@@ -97,20 +102,17 @@ public class Inbox extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         int pos = data.getExtras().getInt("pos");
-        Log.e("CALLED", "inbox : "  + " size : " + inBoxRvItemArrayList.size() + " position : " + pos );
+        //Log.e("CALLED", "inbox : "  + " size : " + inBoxRvItemArrayList.size() + " position : " + pos );
         String aa = data.getStringExtra("a");
         int a = data.getExtras().getInt("int");
-
-        Log.e("CALLED", "aa + a : " + a + "      " + aa + pos);
 
         ///// 삭제하기 눌렀을 때 /////
         if(aa.equals("b")) {
             inBoxRvItemArrayList.remove(pos);
             adapter.notifyItemRemoved(pos);
-            Log.e("CALLED", "fucking2");
         ///// 백버튼, 백, 답장할 때 /////
         } else if(aa.equals("a")) {
-            Log.e("CALLED", "fucking");
+
             inBoxRvItemArrayList.get(pos).circleImage = R.drawable.rv_circle;
             adapter.notifyItemChanged(pos);
            // inBoxRvItemArrayList
@@ -190,45 +192,82 @@ public class Inbox extends Fragment {
                                 JSONObject parentJObject = new JSONObject(res);
                                 JSONArray parentJArray = parentJObject.getJSONArray("messageData");
 
-                                for(int i = 0; i <parentJArray.length(); i++) {
-                                    InBoxRvItem item = new InBoxRvItem();
+                                if(parentJArray.length()==0) {
+//                                    Log.e("CALLED", "asdfasfadsf  : " + inBoxRvItemArrayList.size());
+                                } else {
+                                    for(int i = 0; i <parentJArray.length(); i++) {
+                                        InBoxRvItem item = new InBoxRvItem();
 
-                                    JSONObject child = parentJArray.getJSONObject(i);
+                                        JSONObject child = parentJArray.getJSONObject(i);
 
-                                    item.text = child.getString("txContent");
-                                    item.time = child.getString("dtRegTime");
-                                    item.isRead = child.getString("enIsRead");
-                                    item.seqNo = child.getInt("nSeqNo");
-                                    item.role = child.getString("role");
-                                    item.canReply = child.getString("enCanReply");
+                                        item.text = child.getString("txContent");
+                                        item.time = child.getString("dtReservationTime");
+                                        item.isRead = child.getString("enIsRead");
+                                        item.seqNo = child.getInt("nSeqNo");
+                                        item.role = child.getString("role");
+                                        item.canReply = child.getString("enCanReply");
+                                        item.isXmas = child.getString("enIsXmas");
 
-                                    if(child.getString("enMessageType").equals("G")) {
-                                        item.msgType = child.getString("enMessageType");
-                                        item.image = R.drawable.aurireceive;
-                                    } else if(child.getString("enMessageType").equals("B")) {
-                                        item.msgType = child.getString("enMessageType");
-                                        item.image = R.drawable.agmareceive;
+                                        if(child.getString("enMessageType").equals("G")) {
+                                            item.msgType = child.getString("enMessageType");
+                                            item.image = R.drawable.aurireceive;
+                                        } else if(child.getString("enMessageType").equals("B")) {
+                                            item.msgType = child.getString("enMessageType");
+                                            item.image = R.drawable.agmareceive;
+                                        }
+
+                                        if(item.isRead.equals("N")) {
+                                            item.circleImage = R.drawable.light_circle;
+                                        } else if(item.isRead.equals("Y")) {
+                                            item.circleImage = R.drawable.rv_circle;
+                                        }
+                                        //item.msgType = child.getString("enMessageType");
+                                        item.position = i;
+
+                                        inBoxRvItemArrayList.add(item);
                                     }
-
-                                    if(item.isRead.equals("N")) {
-                                        item.circleImage = R.drawable.light_circle;
-                                    } else if(item.isRead.equals("Y")) {
-                                        item.circleImage = R.drawable.rv_circle;
-                                    }
-                                    //item.msgType = child.getString("enMessageType");
-                                    item.position = i;
-
-                                    inBoxRvItemArrayList.add(item);
                                 }
-                                Log.e("CALLED", "ArrayListSize is : " + inBoxRvItemArrayList.size());
+
+                                //Log.e("CALLED", "ArrayListSize is : " + inBoxRvItemArrayList.size());
                                 adapter.notifyDataSetChanged();
+
+                                int sending_count = parentJObject.getInt("sending_count");
+                                comingMessageTxv.setText("배달 중인 쪽지가 " + sending_count + "개 있어요!");
 
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
-                            if(inBoxRvItemArrayList.get(0).isRead.equals("N")) {
-                                dialog = new ReceivedMailDialog(getContext(), android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-                                dialog.show();
+
+                            SharedPreferences mPrefs = getActivity().getSharedPreferences("popup", Context.MODE_PRIVATE);
+                            int pop_seqNo = mPrefs.getInt("message_id",0);
+
+
+                            if(inBoxRvItemArrayList.isEmpty()) {
+                                dialogInt = 0;
+                                xmasDialog = new XmasDialog(getContext(), android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+                                xmasDialog.setCanceledOnTouchOutside(false);
+                                xmasDialog.show();
+                                //Log.e("asdf" , "afafafafaf");
+                            } else if(inBoxRvItemArrayList.get(0).seqNo > pop_seqNo) {
+                                dialogInt = 2;
+                                xmasDialog = new XmasDialog(getContext(), android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+                                xmasDialog.setCanceledOnTouchOutside(false);
+                                xmasDialog.show();
+                                xmasDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                                    @Override
+                                    public void onCancel(DialogInterface d) {
+                                            dialog = new ReceivedMailDialog(getContext(), android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+                                            dialog.show();
+                                    }
+                                });
+//                                dialog = new ReceivedMailDialog(getContext(), android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+//                                dialog.show();
+                            } else if(inBoxRvItemArrayList.get(0).seqNo <= pop_seqNo) {
+                                dialogInt = 0;
+                                //Toast.makeText(getContext(), "한 번 읽엇으니 읽 지 마 ! ", Toast.LENGTH_SHORT).show();
+                                xmasDialog = new XmasDialog(getContext(), android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+                                xmasDialog.setCanceledOnTouchOutside(false);
+                                xmasDialog.show();
                             }
                         }
                     });
@@ -241,12 +280,6 @@ public class Inbox extends Fragment {
 
     private class ReceivedMailDialog extends Dialog {
 
-//        public ReceivedMailDialog(Context context) {
-//            super(context);
-//
-//            init();
-//        }
-
         public ReceivedMailDialog(Context context, int themeResId) {
             super(context, themeResId);
 
@@ -254,25 +287,33 @@ public class Inbox extends Fragment {
         }
 
         private void init() {
-            //this.requestWindowFeature(Window.FEATURE_NO_TITLE);
             setContentView(R.layout.received_customdialog);
-
-            //getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-
 
             ImageView dialogIV = (ImageView) findViewById(R.id.dialogIV);
             TextView dialogTxv = (TextView) findViewById(R.id.dialogTxv);
             final Button readDialog = (Button) findViewById(R.id.readDialog);
             Button ignoreBtn = (Button) findViewById(R.id.ignoreBtn);
 
-            if(inBoxRvItemArrayList.get(0).msgType.equals("G")) {
-                dialogIV.setImageResource(R.drawable.xmasauri);
-                //dialogIV.setImageResource(R.drawable.receivedauridialog);
-                dialogTxv.setText("어리가 들고 온 메세지");
-           } else if(inBoxRvItemArrayList.get(0).msgType.equals("B")) {
-               // dialogIV.setImageResource(R.drawable.receivedagmadialog);
-                dialogIV.setImageResource(R.drawable.xmasagma);
-                dialogTxv.setText("아그마가 들고 온 메세지");
+            if(inBoxRvItemArrayList.get(0).isXmas.equals("Y")) {
+                if(inBoxRvItemArrayList.get(0).msgType.equals("G")) {
+                    dialogIV.setImageResource(R.drawable.xmasauri);
+                    //dialogIV.setImageResource(R.drawable.receivedauridialog);
+                    dialogTxv.setText("X-mas 어리가 들고 온 메세지");
+                } else if(inBoxRvItemArrayList.get(0).msgType.equals("B")) {
+                    // dialogIV.setImageResource(R.drawable.receivedagmadialog);
+                    dialogIV.setImageResource(R.drawable.xmasagma);
+                    dialogTxv.setText("X-mas 아그마가 들고 온 메세지");
+                }
+            } else if(inBoxRvItemArrayList.get(0).isXmas.equals("N")) {
+                if(inBoxRvItemArrayList.get(0).msgType.equals("G")) {
+                    dialogIV.setImageResource(R.drawable.receivedauridialog);
+                    //dialogIV.setImageResource(R.drawable.receivedauridialog);
+                    dialogTxv.setText("어리가 들고 온 메세지");
+                } else if(inBoxRvItemArrayList.get(0).msgType.equals("B")) {
+                    // dialogIV.setImageResource(R.drawable.receivedagmadialog);
+                    dialogIV.setImageResource(R.drawable.receivedagmadialog);
+                    dialogTxv.setText("아그마가 들고 온 메세지");
+                }
             }
 
             readDialog.setOnClickListener(new View.OnClickListener() {
@@ -281,19 +322,13 @@ public class Inbox extends Fragment {
                     readRDialog = new ReadReceivedMailDialog(getContext(), android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
                     readRDialog.show();
                     //dialog.dismiss();
-//                    Intent intent = new Intent(getContext(), UnRead.class);
-//                    intent.putExtra("int", 2);
-//                    intent.putExtra("seqNo", inBoxRvItemArrayList.get(0).seqNo);
-//                    intent.putExtra("content", inBoxRvItemArrayList.get(0).text);
-//                    intent.putExtra("time", inBoxRvItemArrayList.get(0).time);
-//                    intent.putExtra("role", inBoxRvItemArrayList.get(0).role);
-//                    intent.putExtra("isRead", inBoxRvItemArrayList.get(0).isRead);
-//                    intent.putExtra("msgType", inBoxRvItemArrayList.get(0).msgType);
-//                    intent.putExtra("authorization", token);
-//                    intent.putExtra("canReply", inBoxRvItemArrayList.get(0).canReply);
-//                    startActivity(intent);
-//                    //startActivityForResult(intent, REQUEST_CODE);
+
                     dialog.dismiss();
+
+                    SharedPreferences mPrefs = getActivity().getSharedPreferences("popup", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = mPrefs.edit();
+                    editor.putInt("message_id", inBoxRvItemArrayList.get(0).seqNo);
+                    editor.commit();
                 }
             });
 
@@ -301,6 +336,11 @@ public class Inbox extends Fragment {
                 @Override
                 public void onClick(View v) {
                     dialog.dismiss();
+
+                    SharedPreferences mPrefs = getActivity().getSharedPreferences("popup", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = mPrefs.edit();
+                    editor.putInt("message_id", inBoxRvItemArrayList.get(0).seqNo);
+                    editor.commit();
                 }
             });
         }
@@ -321,9 +361,14 @@ public class Inbox extends Fragment {
         }
 
         private void init() {
-//            this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-
             setContentView(R.layout.activity_un_read);
+
+            ReadMessageApi readMessageApi = new ReadMessageApi();
+            try {
+                readMessageApi.doGetRequest("http://52.78.240.168/api/readMessage/" + inBoxRvItemArrayList.get(0).seqNo, inBoxRvItemArrayList.get(0).role);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
             inBoxRvItemArrayList.get(0).circleImage = R.drawable.rv_circle;
             adapter.notifyItemChanged(0);
@@ -341,7 +386,7 @@ public class Inbox extends Fragment {
             }
 
             dialogContentTxv.setText(inBoxRvItemArrayList.get(0).text);
-
+            dialogContentTxv.setMovementMethod(new ScrollingMovementMethod());
             dialogCloseBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -349,6 +394,64 @@ public class Inbox extends Fragment {
                 }
             });
         }
+    }
 
+    private class XmasDialog extends Dialog {
+
+        public XmasDialog(Context context) {
+            super(context);
+
+            init();
+        }
+
+        public XmasDialog(Context context, int themeResId) {
+            super(context, themeResId);
+
+            init();
+        }
+
+        private void init() {
+            setContentView(R.layout.xmas_popup_dialog);
+
+            Button popupConfirmBtn = (Button) findViewById(R.id.xmas_popup_btn);
+
+            popupConfirmBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (dialogInt == 0) {
+                        //Log.e("dialog", "ggggggg");
+                        xmasDialog.dismiss();
+                    } else if (dialogInt == 2) {
+                        //Log.e("dialog", "ㅁㄴㅇㄹㅁㄴㅇ");
+                        xmasDialog.dismiss();
+                        dialog = new ReceivedMailDialog(getContext(), android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+                        dialog.show();
+                    }
+                }
+            });
+        }
+    }
+
+    public class ReadMessageApi {
+
+        String doGetRequest(String url, String role) throws IOException {
+            Request request = new Request.Builder()
+                    .addHeader("authorization", token)
+                    .url(url)
+                    .build();
+
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Request request, IOException e) {
+
+                }
+
+                @Override
+                public void onResponse(Response response) throws IOException {
+                    final String res = response.body().string();
+                }
+            });
+            return null;
+        }
     }
 }

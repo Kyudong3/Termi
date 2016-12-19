@@ -1,10 +1,16 @@
 package com.kyudong.termi;
 
+import android.*;
+import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -15,6 +21,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.gun0912.tedpermission.PermissionListener;
+import com.gun0912.tedpermission.TedPermission;
+import com.kyudong.termi.Home.HomeActivity;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.MediaType;
@@ -34,6 +44,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 
 public class Login extends AppCompatActivity {
 
@@ -48,10 +59,11 @@ public class Login extends AppCompatActivity {
 
     private String postJson;
     private ImageView logoImageView;
+    private String token;
 
-//    SharedPreferences pref;
-//    SharedPreferences.Editor editor;
-
+    private SharedPreferences mPref;
+    private Boolean isFirst;
+    private ExplainCustomDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,8 +77,67 @@ public class Login extends AppCompatActivity {
         signInTxv = (TextView) findViewById(R.id.signInTxv);
         logoImageView = (ImageView) findViewById(R.id.logoImageView);
 
-//        pref = getSharedPreferences("Auto_login", MODE_PRIVATE);
-//        editor = pref.edit();
+        mPref = getSharedPreferences("isFirst", MODE_PRIVATE);
+        isFirst = mPref.getBoolean("isFirst", false);
+        if(!isFirst) {
+
+            //Log.e("version", "first");
+            SharedPreferences.Editor editor = mPref.edit();
+            editor.putBoolean("isFirst", true);
+            editor.commit();
+
+            //new ThreadAsyncTask().execute();
+
+            dialog = new ExplainCustomDialog();
+            dialog.setStyle(DialogFragment.STYLE_NO_TITLE, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+            dialog.show(getSupportFragmentManager(), "fragment_dialog");
+
+        } else {
+            //Log.e("version", "not first");
+        }
+
+        idEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(pwdEditText.getText().length()!=0 && s.length()>0) {
+                    loginBtn.setBackgroundResource(R.drawable.loginbtncolor);
+                } else {
+                    loginBtn.setBackgroundResource(R.drawable.loginbtngray);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if(pwdEditText.getText().length()==0) {
+                    loginBtn.setBackgroundResource(R.drawable.loginbtngray);
+                }
+            }
+        });
+
+        pwdEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if((s.length()>0) && idEditText.getText().length()!=0) {
+                    loginBtn.setBackgroundResource(R.drawable.loginbtncolor);
+                } else {
+                    loginBtn.setBackgroundResource(R.drawable.loginbtngray);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
 
         signInTxv.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,10 +165,7 @@ public class Login extends AppCompatActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-//
-                Log.e("aa", id);
-                Log.e("aaa", pwd);
-//
+
                 Post LoginPost = new Post();
                 try {
                     LoginPost.doPostRequest("http://52.78.240.168/api/signin", postJson);
@@ -105,96 +173,8 @@ public class Login extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-             //   new LoginTask(id, pwd).execute("http://52.78.240.168/api/signin");
             }
         });
-
-        loginCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(isChecked) {
-                    String id =  idEditText.getText().toString();
-                    String pwd = pwdEditText.getText().toString();
-
-//                    editor.putString("ID", id);
-//                    editor.putString("PWD", pwd);
-//                    editor.putBoolean("Auto_Login_enabled", true);
-//                    editor.apply();
-                } else {
-//                    editor.clear();
-//                    editor.apply();
-                }
-            }
-        });
-
-//        if(pref.getBoolean("Auto_Login_enabled", false)) {
-//            idEditText.setText(pref.getString("ID", ""));
-//            pwdEditText.setText(pref.getString("PWD",""));
-//            loginCheckBox.setChecked(true);
-//        }
-    }
-
-    public class LoginTask extends AsyncTask<String, String, String> {
-
-        private String id;
-        private String pwd;
-
-        public LoginTask(String id, String pwd) {
-            this.id = id;
-            this.pwd = pwd;
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            try {
-                URL url = new URL(params[0]);
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-
-                conn.setRequestMethod("POST");
-                conn.setRequestProperty("Content-Type", "application/json");
-                conn.setDoInput(true);
-                conn.setDoOutput(true);
-                conn.connect();
-
-                OutputStream os = conn.getOutputStream();
-
-                JSONObject postJson = new JSONObject();
-                postJson.put("id", id);
-                postJson.put("password", pwd);
-
-                os.write(postJson.toString().getBytes());
-                os.flush();
-
-                int responseCode = conn.getResponseCode();
-
-                if(responseCode == HttpURLConnection.HTTP_OK) {
-
-                    String token = conn.getHeaderField("authorization");
-
-                    Intent intent = new Intent();
-                    intent.putExtra("authorization", token);
-                    setResult(RESULT_OK, intent);
-
-                    finish();
-
-                    return null;
-
-                }
-
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-        }
     }
 
     public class Post {
@@ -218,22 +198,40 @@ public class Login extends AppCompatActivity {
                     final String res = response.body().string();
 
                     Headers headers = response.headers();
-                    final String token = response.headers().get("authorization");
+
+                    token = response.headers().get("authorization");
+                    //UserToken.setPreferences(getApplicationContext(), "token", token);
+
+                    if(loginCheckBox.isChecked()) {
+                        UserToken.setPreferences(getApplicationContext(), "token", token);
+                    } else {
+                        UserToken.setPreferences(getApplicationContext(), "token", "empty");
+                    }
 
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            String id = idEditText.getText().toString();
-                            String pwd = pwdEditText.getText().toString();
+                            try {
+                                JSONObject jsonOutput = new JSONObject(res);
+                                String responseCode = jsonOutput.getString("responseCode");
 
-                            //Toast.makeText(getApplicationContext(), token + "", Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent();
-                            intent.putExtra("authorization", token);
-                            intent.putExtra("prefId", id);
-                            intent.putExtra("prefPwd", pwd);
-                            setResult(RESULT_OK, intent);
+                                if(responseCode.equals("5")) {
+                                    String fcm_token = FirebaseInstanceId.getInstance().getToken();
+                                    MyFirebaseInstanceIDService fcm_refresh = new MyFirebaseInstanceIDService();
+                                    fcm_refresh.sendRegistrationToServer(fcm_token, token);
 
-                            finish();
+                                    Intent HomeIntent = new Intent(getApplicationContext(), HomeActivity.class);
+                                    HomeIntent.putExtra("authorization", token);
+                                    startActivity(HomeIntent);
+                                    finish();
+                                } else if(responseCode.equals("6")) {
+                                    Toast.makeText(getApplicationContext(),"아이디와 비밀번호를 확인하세요!",Toast.LENGTH_LONG).show();
+                                } else {
+                                    Toast.makeText(getApplicationContext(),"error",Toast.LENGTH_LONG).show();
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
                         }
                     });
 

@@ -1,18 +1,28 @@
 package com.kyudong.termi;
 
+import android.*;
+import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.telephony.TelephonyManager;
+import android.text.SpannableString;
+import android.text.style.UnderlineSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
+import com.gun0912.tedpermission.PermissionListener;
+import com.gun0912.tedpermission.TedPermission;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.MediaType;
 import com.squareup.okhttp.OkHttpClient;
@@ -24,6 +34,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class SignUp extends AppCompatActivity {
 
@@ -40,68 +51,80 @@ public class SignUp extends AppCompatActivity {
 
     private String signUpPostJson;
 
-    String token;
+    private TextView detailTxv;
+    private CheckBox checkBoxx;
+
+    private String token;
+    private String fomattedPhoneNumber;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
 
+        checkBoxx = (CheckBox) findViewById(R.id.imageButton2);
+
+        detailTxv = (TextView) findViewById(R.id.detailTxv);
+
+        SpannableString content = new SpannableString("상세정보");
+        content.setSpan(new UnderlineSpan(), 0, content.length(), 0);
+        detailTxv.setText(content);
+
+        detailTxv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), ClauseActivity.class);
+                startActivity(intent);
+            }
+        });
+
         signInId = (EditText) findViewById(R.id.signInId);
         signInPwd = (EditText) findViewById(R.id.signInPwd);
         signInBtn = (Button) findViewById(R.id.signInBtn);
 
         signUpToolbar = (Toolbar) findViewById(R.id.signUpToolbar);
+        signUpToolbar.setTitle("");
         setSupportActionBar(signUpToolbar);
-
-//        String id = signInId.getText().toString();
-//        String pwd = signInPwd.getText().toString();
 
         token = FirebaseInstanceId.getInstance().getToken();
 
-        Log.e("firebase", "token is : " + token);
-
-        TelephonyManager tMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-        String myPhoneNumber = tMgr.getLine1Number();
-
-        Log.e("num", myPhoneNumber + " ");
-        JSONObject idPwdTelObject = new JSONObject();
-
-//        try {
-//            idPwdTelObject.put("id", id);
-//            idPwdTelObject.put("password", pwd);
-//            idPwdTelObject.put("telephone", myPhoneNumber);
-//
-//            signUpPostJson = idPwdTelObject.toString();
-//
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
+//        TelephonyManager tMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+//        String myPhoneNumber = tMgr.getLine1Number();
 
         signInBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TelephonyManager tMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-                String myPhoneNumber = tMgr.getLine1Number();
+                if(!checkBoxx.isChecked() || signInId.getText().length()==0 || signInPwd.getText().length()==0) {
+                    Toast.makeText(getApplicationContext(), "모두 작성했는지 확인하세요!", Toast.LENGTH_SHORT).show();
+                } else {
+                    TelephonyManager tMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+                    String myPhoneNumber = tMgr.getLine1Number();
 
-                Log.e("num", myPhoneNumber + " ");
-                JSONObject idPwdTelObject = new JSONObject();
+                    if(myPhoneNumber.contains("+")) {
+                        fomattedPhoneNumber = myPhoneNumber.replace("+82","0");
+                    } else {
+                        fomattedPhoneNumber = myPhoneNumber;
+                    }
 
-                PostSignIn signUp = new PostSignIn();
-                try {
-                    idPwdTelObject.put("id", signInId.getText().toString());
-                    idPwdTelObject.put("password", signInPwd.getText().toString());
-                    idPwdTelObject.put("telephone", myPhoneNumber);
-                    idPwdTelObject.put("fcmToken", token);
+                    JSONObject idPwdTelObject = new JSONObject();
 
-                    signUpPostJson = idPwdTelObject.toString();
+                    PostSignIn signUp = new PostSignIn();
+                    try {
+                        idPwdTelObject.put("id", signInId.getText().toString());
+                        idPwdTelObject.put("password", signInPwd.getText().toString());
+                        idPwdTelObject.put("telephone", fomattedPhoneNumber);
+                        idPwdTelObject.put("fcmToken", token);
 
-                    signUp.doPostRequest("http://52.78.240.168/api/signup", signUpPostJson);
-                    finish();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                        signUpPostJson = idPwdTelObject.toString();
+
+                        signUp.doPostRequest("http://52.78.240.168/api/signup", signUpPostJson);
+                        finish();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         });
@@ -135,8 +158,16 @@ public class SignUp extends AppCompatActivity {
                                 JSONObject parentJSONObject = new JSONObject(res);
 
                                 String code = parentJSONObject.getString("responseCode");
-
-                                Toast.makeText(getApplicationContext(), code+"", Toast.LENGTH_SHORT).show();
+                                if(code.equals("2")) {
+                                    Toast.makeText(getApplicationContext(),"회원가입 성공",Toast.LENGTH_LONG).show();
+                                } else if(code.equals("3")) {
+                                    Toast.makeText(getApplicationContext(),"회원가입 실패",Toast.LENGTH_LONG).show();
+                                } else if(code.equals("4")) {
+                                    Toast.makeText(getApplicationContext(),"아이디가 이미 존재합니다",Toast.LENGTH_LONG).show();
+                                } else {
+                                    Toast.makeText(getApplicationContext(),"error",Toast.LENGTH_LONG).show();
+                                }
+                                //Toast.makeText(getApplicationContext(), code+"", Toast.LENGTH_SHORT).show();
 
                             } catch (JSONException e) {
                                 e.printStackTrace();

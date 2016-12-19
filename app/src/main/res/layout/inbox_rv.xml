@@ -33,9 +33,12 @@
                 android:layout_height="46.7dp"
                 android:text="sunwi"
                 android:id="@+id/textView6"
-                android:textColor="#8a000000"
+                android:textColor="#8A000000"
                 android:layout_marginLeft="15.5dp"
-                android:textSize="14dp"
+                android:textSize="14sp"
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:lineSpacingExtra="5.3sp"
                 android:gravity="center_vertical" />
 
             <TextView

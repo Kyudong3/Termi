@@ -37,12 +37,15 @@ public class ReplySendMail extends AppCompatActivity {
     private OkHttpClient client = new OkHttpClient();
 
     private CustomDialog dialog;
-    private String content;
+    private String content, isXmas;
     private int nSeqNo, pos;
     private String token;
 
     private ImageView imageView, auri, agma;
     private TextView replysendBtn;
+    private ImageView replybackBtn;
+
+    private ImageView xImageView;
 
     private EditText writingEditText2;
     private String postJson;
@@ -59,14 +62,35 @@ public class ReplySendMail extends AppCompatActivity {
             content = intent.getStringExtra("content");
             token = intent.getStringExtra("token");
             pos = intent.getExtras().getInt("pos");
+            isXmas = intent.getStringExtra("enIsXmas");
         }
 
-        writingEditText2 = (EditText) findViewById(R.id.writingEditText2);
+        final RelativeLayout zrelativeLayout = (RelativeLayout) findViewById(R.id.zrelativeLayout);
 
-        Log.e("responseCode : " , token + "  " + nSeqNo + "  " + content);
+        SharedPreferences mPref = getSharedPreferences("replyPopupFirst", MODE_PRIVATE);
+
+        Boolean isFirst = mPref.getBoolean("replyPopupFirst", false);
+        if(!isFirst) {
+            //Log.e("popup_version", "first");
+            SharedPreferences.Editor editor = mPref.edit();
+            editor.putBoolean("replyPopupFirst", true);
+            editor.apply();
+
+            zrelativeLayout.setVisibility(View.VISIBLE);
+
+        } else {
+            //Log.e("popup_version", "not first");
+            zrelativeLayout.setVisibility(View.GONE);
+        }
+
+        
+
+        writingEditText2 = (EditText) findViewById(R.id.writingEditText2);
+        replybackBtn = (ImageView) findViewById(R.id.replybackImageView);
+
+        //Log.e("responseCode : " , token + "  " + nSeqNo + "  " + content);
         imageView = (ImageView) findViewById(R.id.xImageView);
         replysendBtn = (TextView) findViewById(R.id.replysendBtnTxv);
-        final RelativeLayout zrelativeLayout = (RelativeLayout) findViewById(R.id.zrelativeLayout);
 
         final LinearLayout linear = (LinearLayout) findViewById(R.id.linear);
 
@@ -81,15 +105,19 @@ public class ReplySendMail extends AppCompatActivity {
         replysendBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialog = new CustomDialog(ReplySendMail.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-                dialog.show();
+                if(writingEditText2.getText().length()==0) {
+                    Toast.makeText(getApplicationContext(), "글을 작성해주세요!", Toast.LENGTH_LONG).show();
+                } else {
+                    dialog = new CustomDialog(ReplySendMail.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+                    dialog.show();
+                }
+            }
+        });
 
-//                PostReplyMessage postReplyMessage = new PostReplyMessage();
-//                try {
-//                    postReplyMessage.doPostRequest("http://52.78.240.168/api/reply" + nSeqNo, "");
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
+        replybackBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
             }
         });
 
@@ -123,7 +151,7 @@ public class ReplySendMail extends AppCompatActivity {
                             try {
                                 parentJObject = new JSONObject(res);
                                 String parentJArray = parentJObject.getString("responseCode");
-                                Log.e("responseCode", parentJArray);
+                                //Log.e("responseCode", parentJArray);
                                 //Toast.makeText(getApplicationContext(), parentJArray , Toast.LENGTH_SHORT).show();
 
                             } catch (JSONException e) {
@@ -164,6 +192,15 @@ public class ReplySendMail extends AppCompatActivity {
 
             auri = (ImageView) findViewById(R.id.sendauri);
             agma = (ImageView) findViewById(R.id.sendagma);
+
+            if(isXmas.equals("Y")) {
+                auri.setImageResource(R.drawable.sendxmasauri);
+                agma.setImageResource(R.drawable.sendxmasagma);
+
+            } else if(isXmas.equals("N")) {
+                auri.setImageResource(R.drawable.sendauri);
+                agma.setImageResource(R.drawable.sendagma);
+            }
 
             auri.setOnClickListener(new View.OnClickListener() {
                 @Override

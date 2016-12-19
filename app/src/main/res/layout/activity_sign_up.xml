@@ -22,7 +22,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="터미 시작하기"
-            android:textSize="20dp"
+            android:textSize="20sp"
             android:textColor="#ffa000" />
 
     </android.support.v7.widget.Toolbar>
@@ -41,11 +41,18 @@
         android:layout_width="303.3dp"
         android:layout_height="43.3dp"
         android:id="@+id/signInId"
+        android:hint="@string/input_id"
+        android:textColor="@color/txt"
+        android:textColorHint="#33000000"
+        android:textSize="16dp"
+        android:maxLines="1"
         android:background="@drawable/rectangle_24"
         android:layout_below="@+id/textView3"
         android:layout_alignParentStart="true"
         android:layout_marginLeft="28.3dp"
-        android:layout_marginTop="10dp" />
+        android:layout_marginTop="10dp"
+        android:paddingLeft="21.3dp"
+        android:maxLength="16"/>
 
     <TextView
         android:layout_width="90dp"
@@ -64,16 +71,56 @@
         android:inputType="textPassword"
         android:ems="10"
         android:id="@+id/signInPwd"
+        android:hint="@string/input_pwd"
+        android:textColor="#8a262b4c"
+        android:textColorHint="#33000000"
+        android:textSize="16dp"
         android:layout_below="@+id/textView4"
         android:layout_alignStart="@+id/textView4"
-        android:layout_marginTop="10dp" />
+        android:layout_marginTop="10dp"
+        android:paddingLeft="20dp"
+        android:paddingBottom="20dp"
+        android:maxLength="16"/>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_below="@+id/signInPwd"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp">
+
+        <CheckBox
+            android:layout_width="27.7dp"
+            android:layout_height="24dp"
+            android:id="@+id/imageButton2"
+            android:layout_marginLeft="28.3dp"
+            android:checked="false"
+            android:button="@drawable/custom_check_box" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView9"
+            android:layout_marginLeft="6dp"
+            android:textColor="#8A212121"
+            android:text="개인정보 취급방침"
+            android:textSize="15sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="상세정보"
+            android:textColor="#8A212121"
+            android:id="@+id/detailTxv"
+            android:layout_marginLeft="100.7dp" />
+    </LinearLayout>
 
     <Button
         android:layout_width="310dp"
         android:layout_height="37.3dp"
         android:text="가입 완료"
         android:id="@+id/signInBtn"
-        android:background="@drawable/rectangle_283_rectangle_55"
+        android:background="@drawable/loginbtncolor"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="false"
         android:layout_marginLeft="27.7dp"

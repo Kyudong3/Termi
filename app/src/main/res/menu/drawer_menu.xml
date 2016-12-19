@@ -20,4 +20,5 @@
             android:title="알림"
             app:actionLayout="@layout/switch_compat"/>
     </group>
+    
 </menu>

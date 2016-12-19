@@ -1,43 +1,60 @@
 package com.kyudong.termi.Home;
 
 
+import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
+import com.github.clans.fab.FloatingActionMenu;
 import com.kyudong.termi.DrawerLayout.DrawerLVItem;
 import com.kyudong.termi.DrawerLayout.DrawerListViewAdapter;
+import com.kyudong.termi.ExplainCustomDialog;
 import com.kyudong.termi.InBox.InBoxRvItem;
 import com.kyudong.termi.InBox.Inbox;
+import com.kyudong.termi.Login;
+import com.kyudong.termi.MainActivity;
 import com.kyudong.termi.R;
 import com.kyudong.termi.Send_Mail;
+import com.kyudong.termi.UserToken;
 import com.squareup.okhttp.Callback;
 import com.squareup.okhttp.Headers;
 import com.squareup.okhttp.MediaType;
@@ -50,13 +67,20 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 public class HomeActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener{
 
     private static final int REQUEST_CODE = 1003;
     private static final int REQUEST_CODE2 = 1004;
+
+    private ViewPager explainViewpager;
+    private ExplainViewPagerAdapter explainViewPagerAdapter;
 
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -65,7 +89,20 @@ public class HomeActivity extends AppCompatActivity
     private Toolbar toolbar;
     private ImageView imageView;
     private NavigationView nav_View;
+    private Menu navMenu;
+    private SwitchCompat switcher;
+    private TextView switcherTxv;
     private TabPagerAdapter pagerAdapter;
+    private CoordinatorLayout fl_main;
+
+    private ExplainCustomDialog dialog;
+
+    // 날짜 관련 //
+    private SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.KOREA);
+    private String today;
+    private Date ChirstmasDate;
+    private Date todayDate;
+    private int compare;
 
     private TextView textTab1;
     private ImageView mail1;
@@ -81,16 +118,20 @@ public class HomeActivity extends AppCompatActivity
 
     int c;
 
+    FrameLayout frame;
+
     // 플로팅 버튼 변수들 //
     private Boolean isFabOpen = false;
-    private FloatingActionButton fab, fab1, fab2, fab3;
+    private FloatingActionMenu menu;
+    private com.github.clans.fab.FloatingActionButton fab, fab1, fab2, fab3;
     private Animation fab_open, fab_close, rotate_forward, rotate_backward;
 
     // OkHttp 통신 변수들 //
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     private OkHttpClient client = new OkHttpClient();
 
-    SharedPreferences sPref;
+//    private SharedPreferences mPref;
+//    private Boolean isFirst;
     SharedPreferences.Editor sEditor;
 
     @Override
@@ -100,7 +141,6 @@ public class HomeActivity extends AppCompatActivity
             if(resultCode == RESULT_OK) {
                if(data != null) {
 
-                   int position = data.getExtras().getInt("pos");
                    int a = data.getExtras().getInt("int");
                    String aa = data.getStringExtra("a");
 
@@ -108,25 +148,21 @@ public class HomeActivity extends AppCompatActivity
                    if(aa.equals("b")) {
                        if(a==0) {
                            Fragment frag = getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.homeViewPager + ":" + a);
-                           Log.e("CALLED", "tag is : please inbox");
                            frag.onActivityResult(requestCode, resultCode, data);
                        }
                        if(a==1) {
                            Fragment frag = getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.homeViewPager + ":" + a);
-                           Log.e("CALLED", "tag is : please outbox");
                            frag.onActivityResult(requestCode, resultCode, data);
                        }
                    // 백버튼,   백   ,  답장하기 눌럿을 때 //
                    } else if(aa.equals("a")) {
                        if(a==0) {
                            Fragment frag = getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.homeViewPager + ":" + a);
-                           Log.e("CALLED", "tag is : please inbox");
                            frag.onActivityResult(requestCode, resultCode, data);
                        }
 
                        if(a==1) {
                            Fragment frag = getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.homeViewPager + ":" + a);
-                           Log.e("CALLED11", "tag is : please outbox");
                            frag.onActivityResult(requestCode, resultCode, data);
                        }
                    }
@@ -140,20 +176,10 @@ public class HomeActivity extends AppCompatActivity
                     String messageType = data.getStringExtra("messageType");
 
                     Fragment frag = getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.homeViewPager + ":" + 1);
-                    Log.e("CALLED99999", "send tag is : please go to outbox");
                     frag.onActivityResult(requestCode, resultCode, data);
                 }
             }
         }
-//        else {
-//            if(resultCode == RESULT_OK) {
-//                if(data != null) {
-//                    Fragment frag = getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.homeViewPager + ":" + 1);
-//                    Log.e("CALLED12351", "reply reply reply reply reply reply reply reply reply reply reply");
-//                    frag.onActivityResult(requestCode, resultCode, data);
-//                }
-//            }
-//        }
     }
 
     @Override
@@ -166,50 +192,77 @@ public class HomeActivity extends AppCompatActivity
             token = intent.getStringExtra("authorization");
         }
 
-
         imageView = (ImageView) findViewById(R.id.menuImage);
         toolbar = (Toolbar)findViewById(R.id.homeToolbar);
+        toolbar.setTitle("");
         setSupportActionBar(toolbar);
+
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerToggle = new ActionBarDrawerToggle(this,mDrawerLayout,toolbar, R.string.app_name, R.string.app_name);
 
         nav_View  = (NavigationView) findViewById(R.id.nav_view);
         nav_View.setNavigationItemSelectedListener(this);
+        navMenu = nav_View.getMenu();
+        MenuItem menuItem = navMenu.findItem(R.id.notice);
+        View actionView = MenuItemCompat.getActionView(menuItem);
+
+        switcher = (SwitchCompat) actionView.findViewById(R.id.switcher);
+        switcherTxv = (TextView) actionView.findViewById(R.id.switcherTxv);
+
+        switcher.setChecked(true);
+        switcher.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(switcher.isChecked()) {
+                    switcherTxv.setText("ON");
+                } else if(!switcher.isChecked()) {
+                    switcherTxv.setText("OFF");
+                }
+            }
+        });
 
         if(Build.VERSION.SDK_INT>=21){
             getWindow().setStatusBarColor(Color.parseColor("#e0e0e0"));
         }
 
-//        fab = (FloatingActionButton)findViewById(R.id.fab);
-//        fab1 = (FloatingActionButton) findViewById(R.id.fab1);
-//        fab2 = (FloatingActionButton) findViewById(R.id.fab2);
+        menu = (FloatingActionMenu) findViewById(R.id.fab_menu);
+        fab1 = (com.github.clans.fab.FloatingActionButton) findViewById(R.id.fab1);
+        fab2 = (com.github.clans.fab.FloatingActionButton) findViewById(R.id.fab2);
         fab_open = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open);
         fab_close = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_close);
 
+        menu.setClosedOnTouchOutside(true);
 
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                int id = view.getId();
-//                switch (id) {
-//                    case R.id.fab:
-//                        animateFAB();
-//                        break;
-//                    case R.id.fab1:
-//                        Log.d("Raj", "Fab 1");
-//                        break;
-//                    case R.id.fab2:
-//                        Log.d("Raj", "Fab 2");
-//                        break;
-//                }
-////                Intent intent2 = new Intent(getApplicationContext(), Send_Mail.class);
-////                intent2.putExtra("authorization", token);
-////                startActivityForResult(intent2, REQUEST_CODE2);
-//                //startActivity(intent2);
-//            }
-//        });
+        menu.setOnMenuToggleListener(new FloatingActionMenu.OnMenuToggleListener() {
+            @Override
+            public void onMenuToggle(boolean opened) {
+                if (opened) {
+                    //menu.set
+                    fab1.setVisibility(View.VISIBLE);
+                    fab2.setVisibility(View.VISIBLE);
+                    //frame.setBackgroundColor(Color.parseColor("#D9000000"));
+                    //Toast.makeText(getApplicationContext(), "Menu is opened", Toast.LENGTH_SHORT).show();
+                } else {
+                    fab1.setVisibility(View.GONE);
+                    fab2.setVisibility(View.GONE);
+                    //frame.setBackgroundColor(Color.TRANSPARENT);
+                    //Toast.makeText(getApplicationContext(), "Menu is closed", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
+        fab1.setOnClickListener(onButtonClick());
+        fab2.setOnClickListener(onButtonClick());
 
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerToggle = new ActionBarDrawerToggle(this,mDrawerLayout,toolbar, R.string.app_name, R.string.app_name);
+        menu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(menu.isOpened()) {
+                    menu.close(true);
+                }
+            }
+        });
+
 
         mDrawerToggle.setDrawerIndicatorEnabled(false);
 
@@ -241,7 +294,7 @@ public class HomeActivity extends AppCompatActivity
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 mViewPager.setCurrentItem(tab.getPosition());
-                Toast.makeText(getApplicationContext(),"Pos onTabSelected: "+tab.getPosition(),Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getApplicationContext(),"Pos onTabSelected: "+tab.getPosition(),Toast.LENGTH_SHORT).show();
                 if(tab.getPosition()==0) {
                     ImageView asdf = (ImageView) tab.getCustomView().findViewById(R.id.imageView5);
                     asdf.setImageResource(R.drawable.hometabreceive_on);
@@ -270,9 +323,47 @@ public class HomeActivity extends AppCompatActivity
             public void onTabReselected(TabLayout.Tab tab) {
             }
         });
+    }
 
+    private View.OnClickListener onButtonClick() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Date date = new Date();
+                today = df.format(date);
 
+                try {
+                    ChirstmasDate = df.parse("2016-12-23 00:00");
+                    todayDate = df.parse(today);
 
+                    compare = todayDate.compareTo(ChirstmasDate);
+
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                if(v == fab1) {
+                    if(compare > 0) {
+                        Toast.makeText(HomeActivity.this, "이벤트 기간이 종료됐습니다!\n오리지널 터미를 이용해주세요!", Toast.LENGTH_SHORT).show();
+                    } else {
+                        //Toast.makeText(HomeActivity.this, "X-mas 터미 시작하기", Toast.LENGTH_SHORT).show();
+                        Intent intent2 = new Intent(getApplicationContext(), Send_Mail.class);
+                        intent2.putExtra("authorization", token);
+                        intent2.putExtra("isXmas", "true");
+                        startActivityForResult(intent2, REQUEST_CODE2);
+                        menu.close(true);
+                    }
+                } else if(v==fab2) {
+                    //Toast.makeText(HomeActivity.this, "오리지널 터미 시작하기", Toast.LENGTH_SHORT).show();
+                    Intent intent2 = new Intent(getApplicationContext(), Send_Mail.class);
+                    intent2.putExtra("authorization", token);
+                    intent2.putExtra("isXmas", "false");
+                    startActivityForResult(intent2, REQUEST_CODE2);
+                    menu.close(true);
+                }
+                //menu.close(true);
+            }
+        };
     }
 
 //    public void animateFAB() {
@@ -304,7 +395,7 @@ public class HomeActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if(id == R.id.logout) {
-            Toast.makeText(HomeActivity.this, "로그아웃", Toast.LENGTH_SHORT).show();
+            Toast.makeText(HomeActivity.this, "로그아웃 되었습니다", Toast.LENGTH_SHORT).show();
             LogOutPost logOutPost = new LogOutPost();
             try {
                 logOutPost.doPostRequest("http://52.78.240.168/api/signout", "A");
@@ -312,9 +403,10 @@ public class HomeActivity extends AppCompatActivity
                 e.printStackTrace();
             }
         } else if(id == R.id.delete) {
-            Toast.makeText(HomeActivity.this, "계정삭제", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(HomeActivity.this, "계정삭제", Toast.LENGTH_SHORT).show();
         } else if(id == R.id.notice) {
-            Toast.makeText(HomeActivity.this, "알림", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(HomeActivity.this, "알림", Toast.LENGTH_SHORT).show();
+
         }
 
         mDrawerLayout.closeDrawer(GravityCompat.END);
@@ -348,20 +440,20 @@ public class HomeActivity extends AppCompatActivity
                         @Override
                         public void run() {
                             try {
-
-                                SharedPreferences sPref = getSharedPreferences("a", MODE_PRIVATE);
-                                SharedPreferences.Editor sEditor = sPref.edit();
-
-                                sEditor.putString("authorization", "");
-                                sEditor.commit();
+                                UserToken.setPreferences(getApplicationContext(), "token", "empty");
 
                                 JSONObject jsonObject = new JSONObject(res);
 
                                 int code = jsonObject.getInt("ResponseCode");
-                                Toast.makeText(getApplicationContext(), "responseCode : " + code, Toast.LENGTH_SHORT).show();
+                                //Toast.makeText(getApplicationContext(), "responseCode : " + code, Toast.LENGTH_SHORT).show();
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
+
+                            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                            finish();
                         }
                     });
 
@@ -370,19 +462,4 @@ public class HomeActivity extends AppCompatActivity
             return null;
         }
     }
-
-//    @Override
-//    public void onConfigurationChanged(Configuration newConfig) {
-//        super.onConfigurationChanged(newConfig);
-//        mDrawerToggle.onConfigurationChanged(newConfig);
-//    }
-//
-//    @Override
-//    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
-//        super.onPostCreate(savedInstanceState);
-//        mDrawerToggle.syncState();
-//    }
-
-
-
 }

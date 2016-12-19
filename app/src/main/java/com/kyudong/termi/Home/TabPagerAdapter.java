@@ -44,21 +44,6 @@ public class TabPagerAdapter extends FragmentPagerAdapter {
         return super.getItemId(position);
     }
 
-    //    @Override
-//    public Fragment getItem(int position) {
-//        switch (position) {
-//            case 0:
-//                Inbox recieved_mail = new Inbox();
-//                return recieved_mail;
-//            case 1:
-//                Outbox inbox = new Outbox();
-//                return inbox;
-//            default:
-//                return null;
-//        }
-//
-//    }
-
     public Object instantiateItem(ViewGroup container, int position) {
         Fragment createdFragment = (Fragment) super.instantiateItem(container, position);
         // save the appropriate reference depending on position

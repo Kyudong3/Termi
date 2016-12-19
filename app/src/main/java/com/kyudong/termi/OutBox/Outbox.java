@@ -85,15 +85,16 @@ public class Outbox extends Fragment {
 
                 if(aa.equals("b")) {
 ////////////////////////////////////////////방법 1//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
                     outBoxRvItemArrayList.remove(pos);
                     adapter.notifyItemRemoved(pos);
-                    Log.e("CALLED", "fucking3");
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
                /// 백버튼, 백 , 답장하기 때 ////
                 } else if(aa.equals("a")) {
                     int diff = data.getExtras().getInt("diff");
                     if(diff==0) {           // 그냥 백버튼 백일 때
-                        Log.e("CALLED NOTHING", "NOOOOOTTTTHHHHHIIIINNNNGGGG");
+                        //Log.e("CALLED NOTHING", "NOOOOOTTTTHHHHHIIIINNNNGGGG");
                     } else if(diff==1) {    // 답장하기이면
                         outBoxRvItemArrayList.clear();
                         GetInBox getInBox = new GetInBox();
@@ -102,7 +103,6 @@ public class Outbox extends Fragment {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-                        Log.e("CALLED1616", "fucking4");
                     }
                 }
 ///////////////////////////////////////////방법 2///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -124,9 +124,9 @@ public class Outbox extends Fragment {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                Log.e("CALLED44", "adding list in outbox success!!");
+                //Log.e("CALLED44", "adding list in outbox success!!");
         } else {
-            Log.e("CALLED5", "adding list in outbox success!!");
+            //Log.e("CALLED5", "adding list in outbox success!!");
             outBoxRvItemArrayList.clear();
             GetInBox getInBox = new GetInBox();
             try {
@@ -201,9 +201,11 @@ public class Outbox extends Fragment {
 
                                     item.text = child.getString("txContent");
                                     item.time = child.getString("dtRegTime");
-                                    item.isRead = child.getString("enIsRead");
+                                    //item.isRead = child.getString("enIsRead");
                                     item.seqNo = child.getInt("nSeqNo");
                                     item.role = child.getString("role");
+                                    item.isXmas = child.getString("enIsXmas");
+
                                     if(child.getString("enMessageType").equals("G")) {
                                         item.msgType = child.getString("enMessageType");
                                         item.image = R.drawable.aurireceive;

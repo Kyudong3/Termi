@@ -3,6 +3,7 @@ package com.kyudong.termi;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -13,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -24,6 +26,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -68,19 +71,37 @@ public class Send_Mail extends AppCompatActivity {
 
     private String canReply = "b";
 
+    private String isXmas;
+    private RelativeLayout send_tip_layout;
+    private ImageView tip_iv;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_send__mail);
 
-        Intent intent = getIntent();
-        if(intent != null) {
-            token = intent.getStringExtra("authorization");
-        }
-
         sendToolbar = (Toolbar) findViewById(R.id.sendToolbar);
-//        sendToolbar.setTitle("Send");
+        sendToolbar.setTitle("");
         setSupportActionBar(sendToolbar);
+
+        SharedPreferences mPref = getSharedPreferences("replyPopupFirst", MODE_PRIVATE);
+
+        send_tip_layout = (RelativeLayout) findViewById(R.id.send_tip_layout);
+        tip_iv = (ImageView) findViewById(R.id.tip_iv);
+
+        Boolean isFirst = mPref.getBoolean("sendPopupFirst", false);
+        if(!isFirst) {
+            //Log.e("popup_version", "first");
+            SharedPreferences.Editor editor = mPref.edit();
+            editor.putBoolean("sendPopupFirst", true);
+            editor.apply();
+
+            send_tip_layout.setVisibility(View.VISIBLE);
+
+        } else {
+            //Log.e("popup_version", "not first");
+            send_tip_layout.setVisibility(View.GONE);
+        }
 
         backImageView = (ImageView) findViewById(R.id.backImageView);
         addPhoneNum = (ImageView) findViewById(R.id.addPhoneNum);
@@ -106,8 +127,12 @@ public class Send_Mail extends AppCompatActivity {
             }
         });
 
-//        ActionBar aB = getSupportActionBar();
-//        aB.setDisplayShowCustomEnabled(true);
+        Intent intent = getIntent();
+        if(intent != null) {
+            token = intent.getStringExtra("authorization");
+            isXmas = intent.getStringExtra("isXmas");
+        }
+
         backImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -118,8 +143,13 @@ public class Send_Mail extends AppCompatActivity {
         sendBtnTxv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialog = new CustomDialog(Send_Mail.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-                dialog.show();
+                if(phoneEditText.getText().length()==0 || writingEditText.getText().length()==0 || radioGroup.getCheckedRadioButtonId()==-1) {
+                    Toast.makeText(getApplicationContext(), "모두 작성했는지 확인하세요!", Toast.LENGTH_LONG).show();
+                } else {
+                    dialog = new CustomDialog(Send_Mail.this, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
+                    dialog.show();
+                }
+
             }
         });
 
@@ -129,8 +159,13 @@ public class Send_Mail extends AppCompatActivity {
                 Intent intent = new Intent(Intent.ACTION_PICK);
                 intent.setData(ContactsContract.CommonDataKinds.Phone.CONTENT_URI);
                 startActivityForResult(intent, 0);
+            }
+        });
 
-//                phoneEditText.setText(mPhoneNumber);
+        tip_iv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                send_tip_layout.setVisibility(View.GONE);
             }
         });
     }
@@ -179,7 +214,7 @@ public class Send_Mail extends AppCompatActivity {
                     ContactsContract.CommonDataKinds.Phone.NUMBER}, null, null, null);
             cursor.moveToFirst();
 
-            String number = cursor.getString(1);
+            String number = cursor.getString(1).replace("-", "");
 
             phoneEditText.setText(number);
         }
@@ -203,16 +238,21 @@ public class Send_Mail extends AppCompatActivity {
         }
 
         private void init() {
-            //this.requestWindowFeature(Window.FEATURE_NO_TITLE);
             setContentView(R.layout.custom_dialog);
 
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-            //getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
 
             angel = (ImageView) findViewById(R.id.sendauri);
             devil = (ImageView) findViewById(R.id.sendagma);
 
-            llll = (LinearLayout) findViewById(R.id.llll);
+            if(isXmas.equals("true")) {
+                angel.setImageResource(R.drawable.sendxmasauri);
+                devil.setImageResource(R.drawable.sendxmasagma);
+
+            } else if(isXmas.equals("false")) {
+                angel.setImageResource(R.drawable.sendauri);
+                devil.setImageResource(R.drawable.sendagma);
+            }
 
             angel.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -226,6 +266,11 @@ public class Send_Mail extends AppCompatActivity {
                         Jobj.put("receiverPhoneNumber", phoneEditText.getText().toString());
                         Jobj.put("messageType", messageType);
                         Jobj.put("canReply", canReply);
+                        if(isXmas.equals("true")) {
+                            Jobj.put("isXmas", true);
+                        } else if(isXmas.equals("false")) {
+                            Jobj.put("isXmas", false);
+                        }
                         postJson = Jobj.toString();
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -260,6 +305,11 @@ public class Send_Mail extends AppCompatActivity {
                         Jobj.put("receiverPhoneNumber", phoneEditText.getText().toString());
                         Jobj.put("messageType", messageType);
                         Jobj.put("canReply", canReply);
+                        if(isXmas.equals("true")) {
+                            Jobj.put("isXmas", true);
+                        } else if(isXmas.equals("false")) {
+                            Jobj.put("isXmas", false);
+                        }
                         postJson = Jobj.toString();
 
                     } catch (JSONException e) {

@@ -45,7 +45,7 @@ public class ReadMessage extends AppCompatActivity {
     String msgType;
     int pos;
     ArrayList<InBoxRvItem> list;
-    int a;
+    String read_where;
     private static final int REQUEST_CODE2 = 1004;
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     private OkHttpClient client = new OkHttpClient();
@@ -59,6 +59,7 @@ public class ReadMessage extends AppCompatActivity {
     private Button btn;
     private String auth;
     private String canReply;
+    private String isXmas;
 
     long month;
     long day;
@@ -73,7 +74,7 @@ public class ReadMessage extends AppCompatActivity {
             if(resultCode==RESULT_OK) {
                 if(data!=null) {
                     int pos = data.getExtras().getInt("pos");
-                    Log.e("responseCode : ", "wowowowowo success!!");
+                    //Log.e("responseCode : ", "wowowowowo success!!");
                     btn.setVisibility(View.GONE);
 
                     Intent intent = new Intent();
@@ -104,10 +105,12 @@ public class ReadMessage extends AppCompatActivity {
             readContentTxv = (TextView) findViewById(R.id.readContentTxv);
             timeTxv = (TextView) findViewById(R.id.timeTxv);
             readMessageToolbar = (Toolbar) findViewById(R.id.readMessageToolbar);
+            readMessageToolbar.setTitle("");
             setSupportActionBar(readMessageToolbar);
 
-            a = intent.getExtras().getInt("int");
-            if(a==0) {
+            read_where = intent.getStringExtra("int");
+
+            if(read_where.equals("inboxRead")) {
                 seqNo = intent.getExtras().getInt("seqNo");
                 content = intent.getStringExtra("content");
                 time = intent.getStringExtra("time");
@@ -117,6 +120,8 @@ public class ReadMessage extends AppCompatActivity {
                 auth = intent.getStringExtra("authorization");
                 pos = intent.getExtras().getInt("pos");
                 canReply = intent.getStringExtra("canReply");
+                isXmas = intent.getStringExtra("isXmas");
+
                 if(canReply.equals("N")) {
                     btn.setVisibility(View.GONE);
                 }
@@ -141,6 +146,7 @@ public class ReadMessage extends AppCompatActivity {
                         gointent.putExtra("content", content);
                         gointent.putExtra("token", auth);
                         gointent.putExtra("pos", pos);
+                        gointent.putExtra("enIsXmas", isXmas);
                         startActivityForResult(gointent, REQUEST_CODE2);
                     }
                 });
@@ -172,7 +178,7 @@ public class ReadMessage extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-            } else if(a==1) {
+            } else if(read_where.equals("outboxRead")) {
                 seqNo = intent.getExtras().getInt("seqNo");
                 content = intent.getStringExtra("content");
                 time = intent.getStringExtra("time");
@@ -282,7 +288,7 @@ public class ReadMessage extends AppCompatActivity {
                             try {
                                 parentJObject = new JSONObject(res);
                                 String parentJArray = parentJObject.getString("responseCode");
-                                Toast.makeText(getApplicationContext(), parentJArray , Toast.LENGTH_SHORT).show();
+                                //Toast.makeText(getApplicationContext(), parentJArray , Toast.LENGTH_SHORT).show();
 
                             } catch (JSONException e) {
                                 e.printStackTrace();

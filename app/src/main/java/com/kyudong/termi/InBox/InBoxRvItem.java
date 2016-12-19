@@ -16,6 +16,9 @@ public class InBoxRvItem implements Serializable{
     String role;
     String msgType;
     int position;
+    String isXmas;
+
+    int first;
 
     int circleImage;
 

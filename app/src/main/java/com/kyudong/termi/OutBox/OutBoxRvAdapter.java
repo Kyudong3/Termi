@@ -53,6 +53,7 @@ public class OutBoxRvAdapter extends RecyclerView.Adapter<OutBoxRvHolder> {
                 String isRead = outBoxRvItemArrayList.get(pos).isRead;
                 String role = outBoxRvItemArrayList.get(pos).role;
                 String msgType = outBoxRvItemArrayList.get(pos).msgType;
+                String isXmas = outBoxRvItemArrayList.get(pos).isXmas;
 
                 Intent intent = new Intent(v.getContext(), ReadMessage.class);
 
@@ -64,7 +65,8 @@ public class OutBoxRvAdapter extends RecyclerView.Adapter<OutBoxRvHolder> {
                 intent.putExtra("msgType", msgType);
                 intent.putExtra("authorization", token);
                 intent.putExtra("pos", pos);
-                intent.putExtra("int", 1);
+                intent.putExtra("isXmas", isXmas);
+                intent.putExtra("int", "outboxRead");
 
                 ((Activity) context).startActivityForResult(intent, REQUEST_CODE);
                 //v.getContext().startActivity(intent);

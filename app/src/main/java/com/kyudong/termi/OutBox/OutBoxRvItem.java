@@ -14,5 +14,6 @@ public class OutBoxRvItem {
     String role;
     String msgType;
     int position;
+    String isXmas;
 
 }

@@ -22,6 +22,14 @@
             android:id="@+id/backImageView" />
 
         <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:textColor="#61000000"
+            android:textSize="20sp"
+            android:text="쪽지 작성"/>
+
+        <TextView
             android:layout_gravity="end"
             android:layout_width="55dp"
             android:layout_height="30dp"
@@ -50,7 +58,8 @@
             android:layout_height="wrap_content"
             android:text="받는 사람 :"
             android:id="@+id/textView5"
-            android:paddingLeft="19dp" />
+            android:paddingLeft="19dp"
+            android:textColor="#8A000000" />
 
         <EditText
             android:layout_width="190dp"
@@ -62,16 +71,48 @@
             android:layout_below="@+id/sendToolbar"
             android:layout_alignStart="@+id/sendToolbar"
             android:layout_toStartOf="@+id/button2"
-            android:layout_marginLeft="10dp" />
+            android:layout_marginLeft="10dp"
+            android:maxLength="13" />
 
         <ImageView
             android:background="@drawable/oval_11_line_line"
             android:layout_width="25.3dp"
             android:layout_height="25.3dp"
             android:id="@+id/addPhoneNum"
-            android:layout_marginLeft="35dp" />
+
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="53dp" />
 
     </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:id="@+id/send_tip_layout"
+        android:layout_below="@+id/linear"
+        android:background="#ffa000"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="상대방 마음도 궁금해요?\n딱 한번, 상대방의 답장을 받을 수 있습니다."
+            android:id="@+id/tip_txv"
+            android:textSize="15sp"
+            android:textColor="#ffffff"
+            android:lineSpacingExtra="3sp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="18.7dp" />
+
+        <ImageView
+            android:src="@drawable/replyxbox"
+            android:layout_width="25.3dp"
+            android:layout_height="25.3dp"
+            android:id="@+id/tip_iv"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="16.8dp" />
+    </RelativeLayout>
 
     <LinearLayout
         android:orientation="horizontal"
@@ -79,7 +120,7 @@
         android:layout_height="56dp"
         android:id="@+id/linearLayout"
         android:layout_alignParentBottom="false"
-        android:layout_below="@+id/linear"
+        android:layout_below="@+id/send_tip_layout"
         android:gravity="center">
 
         <RadioGroup
@@ -115,9 +156,12 @@
 
         <EditText
             android:layout_width="match_parent"
-            android:layout_height="360dp"
+            android:layout_height="350dp"
             android:id="@+id/writingEditText"
             android:padding="16.2dp"
-            android:background="@null" />
+            android:background="@null"
+            android:textSize="16sp"
+            android:textColor="#8A000000"
+            android:lineSpacingExtra="5sp" />
     </LinearLayout>
 </RelativeLayout>
