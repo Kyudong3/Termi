@@ -26,9 +26,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        //sendNotification(remoteMessage.getData().get("message"));
-        //Log.e(TAG, "From: " + remoteMessage.getFrom());
-
         if(remoteMessage.getData().size() > 0) {
             if(remoteMessage.getData().get("type").equals("1")){
                 dataStr = "보냈던 쪽지가 상대방에게 도착했어요!";
@@ -36,14 +33,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             else if(remoteMessage.getData().get("type").equals("0")){
                 dataStr = "누군가 보낸 쪽지가 드디어 도착했어요!";
             }
-            //Log.e(TAG, "Message data payload: " + remoteMessage.getData());
         }
 
         if(remoteMessage.getNotification() != null) {
-            //Log.e(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
         }
 
-        //imgsrc = remoteMessage.getData().get("imgsrc");
         sendNotification(dataStr);
     }
 
@@ -54,7 +48,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 , intent, PendingIntent.FLAG_ONE_SHOT);
 
         if(messageBody != null) {
-            //Log.d(TAG, messageBody);
+
         }
 
 
@@ -67,7 +61,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .setContentTitle(dataStr)
                 .setContentText("지금 바로 확인하세요")
                 .setTicker("Termi")
-//                .setContentText(messageBody)
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
                 .setContentIntent(pendingIntent);
@@ -75,14 +68,5 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         notificationManager.notify(0, notificationBuilder.build());
-
-
-
-//        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
-//                .setSmallIcon(R.drawable.common_google_signin_btn_icon_dark)
-//                .setAutoCancel(true)
-//                .setSound(defaultSoundUri)
-//                .setContentTitle(messageBody)
-//                .setContentIntent(pendingIntent);
     }
 }
