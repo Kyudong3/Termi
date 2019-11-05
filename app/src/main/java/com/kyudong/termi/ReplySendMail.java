@@ -71,7 +71,6 @@ public class ReplySendMail extends AppCompatActivity {
 
         Boolean isFirst = mPref.getBoolean("replyPopupFirst", false);
         if(!isFirst) {
-            //Log.e("popup_version", "first");
             SharedPreferences.Editor editor = mPref.edit();
             editor.putBoolean("replyPopupFirst", true);
             editor.apply();
@@ -79,7 +78,6 @@ public class ReplySendMail extends AppCompatActivity {
             zrelativeLayout.setVisibility(View.VISIBLE);
 
         } else {
-            //Log.e("popup_version", "not first");
             zrelativeLayout.setVisibility(View.GONE);
         }
 
@@ -87,8 +85,6 @@ public class ReplySendMail extends AppCompatActivity {
 
         writingEditText2 = (EditText) findViewById(R.id.writingEditText2);
         replybackBtn = (ImageView) findViewById(R.id.replybackImageView);
-
-        //Log.e("responseCode : " , token + "  " + nSeqNo + "  " + content);
         imageView = (ImageView) findViewById(R.id.xImageView);
         replysendBtn = (TextView) findViewById(R.id.replysendBtnTxv);
 
@@ -151,9 +147,6 @@ public class ReplySendMail extends AppCompatActivity {
                             try {
                                 parentJObject = new JSONObject(res);
                                 String parentJArray = parentJObject.getString("responseCode");
-                                //Log.e("responseCode", parentJArray);
-                                //Toast.makeText(getApplicationContext(), parentJArray , Toast.LENGTH_SHORT).show();
-
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -184,11 +177,9 @@ public class ReplySendMail extends AppCompatActivity {
         }
 
         private void init() {
-            //this.requestWindowFeature(Window.FEATURE_NO_TITLE);
             setContentView(R.layout.custom_dialog);
 
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
-            //getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
 
             auri = (ImageView) findViewById(R.id.sendauri);
             agma = (ImageView) findViewById(R.id.sendagma);
@@ -230,7 +221,6 @@ public class ReplySendMail extends AppCompatActivity {
                     intent.putExtra("pos", pos);
                     setResult(RESULT_OK, intent);
                     finish();
-                    //finish();
                 }
             });
 
@@ -261,7 +251,7 @@ public class ReplySendMail extends AppCompatActivity {
                     setResult(RESULT_OK, intent);
 
                     finish();
-                    //finish();
+
                 }
             });
 
