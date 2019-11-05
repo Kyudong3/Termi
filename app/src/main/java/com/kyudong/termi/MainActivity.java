@@ -34,9 +34,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         String token = UserToken.getPreferences(getApplicationContext(), "token");
-
-        //Log.e("token", token);
-
+        
         if(token.equals("empty")) {
             Intent loginIntent = new Intent(getApplicationContext(), Login.class);
             startActivity(loginIntent);
@@ -48,23 +46,6 @@ public class MainActivity extends AppCompatActivity {
             startActivity(homeIntent);
             finish();
         }
-
-//        SharedPreferences sPref = getSharedPreferences("a", MODE_PRIVATE);
-//
-//        String token = sPref.getString("authorization", "");
-//
-//        if(token.equals("")) {
-//            Intent loginIntent = new Intent(getApplicationContext(), Login.class);
-//            startActivityForResult(loginIntent, REQUEST_CODE);
-//            //finish();
-//        } else {
-//            Log.e("aaa", token);
-//            Intent homeIntent = new Intent(getApplicationContext(), HomeActivity.class);
-//            homeIntent.putExtra("authorization", token);
-//            startActivity(homeIntent);
-//
-//            finish();
-//        }
     }
 
 }
