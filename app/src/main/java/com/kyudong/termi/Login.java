@@ -80,20 +80,16 @@ public class Login extends AppCompatActivity {
         mPref = getSharedPreferences("isFirst", MODE_PRIVATE);
         isFirst = mPref.getBoolean("isFirst", false);
         if(!isFirst) {
-
-            //Log.e("version", "first");
             SharedPreferences.Editor editor = mPref.edit();
             editor.putBoolean("isFirst", true);
             editor.commit();
-
-            //new ThreadAsyncTask().execute();
 
             dialog = new ExplainCustomDialog();
             dialog.setStyle(DialogFragment.STYLE_NO_TITLE, android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
             dialog.show(getSupportFragmentManager(), "fragment_dialog");
 
         } else {
-            //Log.e("version", "not first");
+
         }
 
         idEditText.addTextChangedListener(new TextWatcher() {
@@ -200,8 +196,6 @@ public class Login extends AppCompatActivity {
                     Headers headers = response.headers();
 
                     token = response.headers().get("authorization");
-                    //UserToken.setPreferences(getApplicationContext(), "token", token);
-
                     if(loginCheckBox.isChecked()) {
                         UserToken.setPreferences(getApplicationContext(), "token", token);
                     } else {
