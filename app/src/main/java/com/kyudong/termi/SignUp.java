@@ -89,9 +89,6 @@ public class SignUp extends AppCompatActivity {
 
         token = FirebaseInstanceId.getInstance().getToken();
 
-//        TelephonyManager tMgr = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-//        String myPhoneNumber = tMgr.getLine1Number();
-
         signInBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
