@@ -75,7 +75,6 @@ public class Inbox extends Fragment {
 
         token = getActivity().getIntent().getStringExtra("authorization");
 
-        //inBoxRvItemArrayList = new ArrayList<>();
         comingMessageTxv = (TextView) v.findViewById(R.id.comingMessageTxv);
         rv = (RecyclerView) v.findViewById(R.id.inRecyclerView);
         llm = new LinearLayoutManager(getContext());
@@ -102,7 +101,6 @@ public class Inbox extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         int pos = data.getExtras().getInt("pos");
-        //Log.e("CALLED", "inbox : "  + " size : " + inBoxRvItemArrayList.size() + " position : " + pos );
         String aa = data.getStringExtra("a");
         int a = data.getExtras().getInt("int");
 
@@ -115,7 +113,6 @@ public class Inbox extends Fragment {
 
             inBoxRvItemArrayList.get(pos).circleImage = R.drawable.rv_circle;
             adapter.notifyItemChanged(pos);
-           // inBoxRvItemArrayList
         }
 
 
@@ -139,7 +136,6 @@ public class Inbox extends Fragment {
         private Drawable mDivider;
 
         public SimpleDividerItemDecoration(Context context) {
-            //mDivider = ResourcesCompat.getDrawable(context.getResources(), R.drawable.line_divider, context.getTheme());
             mDivider = ContextCompat.getDrawable(context, R.drawable.line_divider);
         }
 
@@ -187,13 +183,10 @@ public class Inbox extends Fragment {
                         @Override
                         public void run() {
                             try {
-                                //inBoxRvItemArrayList.clear();
-
                                 JSONObject parentJObject = new JSONObject(res);
                                 JSONArray parentJArray = parentJObject.getJSONArray("messageData");
 
                                 if(parentJArray.length()==0) {
-//                                    Log.e("CALLED", "asdfasfadsf  : " + inBoxRvItemArrayList.size());
                                 } else {
                                     for(int i = 0; i <parentJArray.length(); i++) {
                                         InBoxRvItem item = new InBoxRvItem();
@@ -221,14 +214,12 @@ public class Inbox extends Fragment {
                                         } else if(item.isRead.equals("Y")) {
                                             item.circleImage = R.drawable.rv_circle;
                                         }
-                                        //item.msgType = child.getString("enMessageType");
                                         item.position = i;
 
                                         inBoxRvItemArrayList.add(item);
                                     }
                                 }
 
-                                //Log.e("CALLED", "ArrayListSize is : " + inBoxRvItemArrayList.size());
                                 adapter.notifyDataSetChanged();
 
                                 int sending_count = parentJObject.getInt("sending_count");
@@ -247,7 +238,6 @@ public class Inbox extends Fragment {
                                 xmasDialog = new XmasDialog(getContext(), android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
                                 xmasDialog.setCanceledOnTouchOutside(false);
                                 xmasDialog.show();
-                                //Log.e("asdf" , "afafafafaf");
                             } else if(inBoxRvItemArrayList.get(0).seqNo > pop_seqNo) {
                                 dialogInt = 2;
                                 xmasDialog = new XmasDialog(getContext(), android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
@@ -260,11 +250,8 @@ public class Inbox extends Fragment {
                                             dialog.show();
                                     }
                                 });
-//                                dialog = new ReceivedMailDialog(getContext(), android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
-//                                dialog.show();
                             } else if(inBoxRvItemArrayList.get(0).seqNo <= pop_seqNo) {
                                 dialogInt = 0;
-                                //Toast.makeText(getContext(), "한 번 읽엇으니 읽 지 마 ! ", Toast.LENGTH_SHORT).show();
                                 xmasDialog = new XmasDialog(getContext(), android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
                                 xmasDialog.setCanceledOnTouchOutside(false);
                                 xmasDialog.show();
@@ -297,20 +284,16 @@ public class Inbox extends Fragment {
             if(inBoxRvItemArrayList.get(0).isXmas.equals("Y")) {
                 if(inBoxRvItemArrayList.get(0).msgType.equals("G")) {
                     dialogIV.setImageResource(R.drawable.xmasauri);
-                    //dialogIV.setImageResource(R.drawable.receivedauridialog);
                     dialogTxv.setText("X-mas 어리가 들고 온 메세지");
                 } else if(inBoxRvItemArrayList.get(0).msgType.equals("B")) {
-                    // dialogIV.setImageResource(R.drawable.receivedagmadialog);
                     dialogIV.setImageResource(R.drawable.xmasagma);
                     dialogTxv.setText("X-mas 아그마가 들고 온 메세지");
                 }
             } else if(inBoxRvItemArrayList.get(0).isXmas.equals("N")) {
                 if(inBoxRvItemArrayList.get(0).msgType.equals("G")) {
                     dialogIV.setImageResource(R.drawable.receivedauridialog);
-                    //dialogIV.setImageResource(R.drawable.receivedauridialog);
                     dialogTxv.setText("어리가 들고 온 메세지");
                 } else if(inBoxRvItemArrayList.get(0).msgType.equals("B")) {
-                    // dialogIV.setImageResource(R.drawable.receivedagmadialog);
                     dialogIV.setImageResource(R.drawable.receivedagmadialog);
                     dialogTxv.setText("아그마가 들고 온 메세지");
                 }
@@ -372,8 +355,6 @@ public class Inbox extends Fragment {
 
             inBoxRvItemArrayList.get(0).circleImage = R.drawable.rv_circle;
             adapter.notifyItemChanged(0);
-//            getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-//            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
 
             RelativeLayout readBGLayout = (RelativeLayout) findViewById(R.id.readbackGroundLL);
             Button dialogCloseBtn = (Button) findViewById(R.id.dialogCloseBtn);
@@ -419,10 +400,8 @@ public class Inbox extends Fragment {
                 @Override
                 public void onClick(View v) {
                     if (dialogInt == 0) {
-                        //Log.e("dialog", "ggggggg");
                         xmasDialog.dismiss();
                     } else if (dialogInt == 2) {
-                        //Log.e("dialog", "ㅁㄴㅇㄹㅁㄴㅇ");
                         xmasDialog.dismiss();
                         dialog = new ReceivedMailDialog(getContext(), android.R.style.Theme_Translucent_NoTitleBar_Fullscreen);
                         dialog.show();
