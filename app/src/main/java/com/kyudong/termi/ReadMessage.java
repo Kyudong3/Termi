@@ -74,7 +74,6 @@ public class ReadMessage extends AppCompatActivity {
             if(resultCode==RESULT_OK) {
                 if(data!=null) {
                     int pos = data.getExtras().getInt("pos");
-                    //Log.e("responseCode : ", "wowowowowo success!!");
                     btn.setVisibility(View.GONE);
 
                     Intent intent = new Intent();
@@ -163,8 +162,6 @@ public class ReadMessage extends AppCompatActivity {
                         DeleteMessage deleteMessage = new DeleteMessage();
                         try {
                             deleteMessage.doDeleteRequest("http://52.78.240.168/api/message/receive/" + seqNo, auth);
-                            //Toast.makeText(getApplicationContext(), "글이 삭제되었습니다", Toast.LENGTH_SHORT).show();
-                            //finish();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -214,8 +211,6 @@ public class ReadMessage extends AppCompatActivity {
                         DeleteMessage2 deleteMessage2 = new DeleteMessage2();
                         try {
                             deleteMessage2.doDeleteRequest("http://52.78.240.168/api/message/send/" + seqNo, auth);
-                            //Toast.makeText(getApplicationContext(), "글이 삭제되었습니다", Toast.LENGTH_SHORT).show();
-                            //finish();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -288,8 +283,6 @@ public class ReadMessage extends AppCompatActivity {
                             try {
                                 parentJObject = new JSONObject(res);
                                 String parentJArray = parentJObject.getString("responseCode");
-                                //Toast.makeText(getApplicationContext(), parentJArray , Toast.LENGTH_SHORT).show();
-
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -329,7 +322,6 @@ public class ReadMessage extends AppCompatActivity {
                             intent.putExtra("body", res);
                             intent.putExtra("int", 0);
                             intent.putExtra("a", "b");
-                            //intent.putExtra("list", list);
                             setResult(RESULT_OK, intent);
 
                             Toast.makeText(getApplicationContext(), "글이 삭제되었습니다", Toast.LENGTH_SHORT).show();
@@ -371,7 +363,6 @@ public class ReadMessage extends AppCompatActivity {
                             intent.putExtra("body", res);
                             intent.putExtra("int",1);
                             intent.putExtra("a", "b");
-                            //intent.putExtra("list", list);
                             setResult(RESULT_OK, intent);
 
                             Toast.makeText(getApplicationContext(), "글이 삭제되었습니다", Toast.LENGTH_SHORT).show();
@@ -384,17 +375,4 @@ public class ReadMessage extends AppCompatActivity {
             return null;
         }
     }
-
-//    @Override
-//    public void onClick(View v) {
-//
-//        switch (v.getId()) {
-//            case R.id.backImageView:
-//                finish();
-//                break;
-//            case R.id.deleteBtnTxv:
-//                break;
-//
-//        }
-//    }
 }
