@@ -84,14 +84,9 @@ public class InBoxRvAdapter extends RecyclerView.Adapter<InBoxRvHolder> {
                 intent.putExtra("pos", pos);
                 intent.putExtra("canReply", canReply);
                 intent.putExtra("isXmas", isXmas);
-                //intent.putExtra("token", token);
                 intent.putExtra("int", "inboxRead");
 
-//                Log.e("CALLED", ""+pos + "   " + seqNo + " size : " + inBoxRvItemArrayList.size());
-
                 ((Activity) context).startActivityForResult(intent, REQUEST_CODE);
-
-                //v.getContext().startActivity(intent);
 
             }
         });
