@@ -130,8 +130,6 @@ public class HomeActivity extends AppCompatActivity
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
     private OkHttpClient client = new OkHttpClient();
 
-//    private SharedPreferences mPref;
-//    private Boolean isFirst;
     SharedPreferences.Editor sEditor;
 
     @Override
@@ -240,13 +238,9 @@ public class HomeActivity extends AppCompatActivity
                     //menu.set
                     fab1.setVisibility(View.VISIBLE);
                     fab2.setVisibility(View.VISIBLE);
-                    //frame.setBackgroundColor(Color.parseColor("#D9000000"));
-                    //Toast.makeText(getApplicationContext(), "Menu is opened", Toast.LENGTH_SHORT).show();
                 } else {
                     fab1.setVisibility(View.GONE);
                     fab2.setVisibility(View.GONE);
-                    //frame.setBackgroundColor(Color.TRANSPARENT);
-                    //Toast.makeText(getApplicationContext(), "Menu is closed", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -294,15 +288,12 @@ public class HomeActivity extends AppCompatActivity
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 mViewPager.setCurrentItem(tab.getPosition());
-                //Toast.makeText(getApplicationContext(),"Pos onTabSelected: "+tab.getPosition(),Toast.LENGTH_SHORT).show();
                 if(tab.getPosition()==0) {
                     ImageView asdf = (ImageView) tab.getCustomView().findViewById(R.id.imageView5);
                     asdf.setImageResource(R.drawable.hometabreceive_on);
-                    //tab.setCustomView(R.layout.custom_tab_layout);
                 } else if(tab.getPosition()==1) {
                     ImageView asdf = (ImageView) tab.getCustomView().findViewById(R.id.imageView6);
                     asdf.setImageResource(R.drawable.hometabsend_on);
-                    //tab.setCustomView(R.layout.custom_tab_layout2);
                 }
             }
 
@@ -311,11 +302,9 @@ public class HomeActivity extends AppCompatActivity
                 if(tab.getPosition()==0) {
                     ImageView asdf = (ImageView) tab.getCustomView().findViewById(R.id.imageView5);
                     asdf.setImageResource(R.drawable.hometabreceive_off);
-                    //tab.setCustomView(R.layout.custom_tab_layout4);
                 } else if(tab.getPosition()==1) {
                     ImageView asdf = (ImageView) tab.getCustomView().findViewById(R.id.imageView6);
                     asdf.setImageResource(R.drawable.tabsendoff);
-                    //tab.setCustomView(R.layout.custom_tab_layout3);
                 }
             }
 
@@ -346,7 +335,6 @@ public class HomeActivity extends AppCompatActivity
                     if(compare > 0) {
                         Toast.makeText(HomeActivity.this, "이벤트 기간이 종료됐습니다!\n오리지널 터미를 이용해주세요!", Toast.LENGTH_SHORT).show();
                     } else {
-                        //Toast.makeText(HomeActivity.this, "X-mas 터미 시작하기", Toast.LENGTH_SHORT).show();
                         Intent intent2 = new Intent(getApplicationContext(), Send_Mail.class);
                         intent2.putExtra("authorization", token);
                         intent2.putExtra("isXmas", "true");
@@ -354,41 +342,15 @@ public class HomeActivity extends AppCompatActivity
                         menu.close(true);
                     }
                 } else if(v==fab2) {
-                    //Toast.makeText(HomeActivity.this, "오리지널 터미 시작하기", Toast.LENGTH_SHORT).show();
                     Intent intent2 = new Intent(getApplicationContext(), Send_Mail.class);
                     intent2.putExtra("authorization", token);
                     intent2.putExtra("isXmas", "false");
                     startActivityForResult(intent2, REQUEST_CODE2);
                     menu.close(true);
                 }
-                //menu.close(true);
             }
         };
     }
-
-//    public void animateFAB() {
-//        if (isFabOpen) {
-//  //          fab.startAnimation(rotate_backward);
-//            fab1.startAnimation(fab_close);
-//            fab2.startAnimation(fab_close);
-//            //fab3.startAnimation(fab_close);
-//            fab1.setClickable(false);
-//            fab2.setClickable(false);
-//            //fab3.setClickable(false);
-//            isFabOpen = false;
-//            Log.d("Raj", "close");
-//        } else {
-////            fab.startAnimation(rotate_forward);
-//            fab1.startAnimation(fab_open);
-//            fab2.startAnimation(fab_open);
-//            //fab3.startAnimation(fab_open);
-//            fab1.setClickable(true);
-//            fab2.setClickable(true);
-//            //fab3.setClickable(true);
-//            isFabOpen = true;
-//            Log.d("Raj", "open");
-//        }
-//    }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -403,10 +365,7 @@ public class HomeActivity extends AppCompatActivity
                 e.printStackTrace();
             }
         } else if(id == R.id.delete) {
-            //Toast.makeText(HomeActivity.this, "계정삭제", Toast.LENGTH_SHORT).show();
         } else if(id == R.id.notice) {
-            //Toast.makeText(HomeActivity.this, "알림", Toast.LENGTH_SHORT).show();
-
         }
 
         mDrawerLayout.closeDrawer(GravityCompat.END);
@@ -445,7 +404,6 @@ public class HomeActivity extends AppCompatActivity
                                 JSONObject jsonObject = new JSONObject(res);
 
                                 int code = jsonObject.getInt("ResponseCode");
-                                //Toast.makeText(getApplicationContext(), "responseCode : " + code, Toast.LENGTH_SHORT).show();
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
