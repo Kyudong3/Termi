@@ -91,7 +91,6 @@ public class Send_Mail extends AppCompatActivity {
 
         Boolean isFirst = mPref.getBoolean("sendPopupFirst", false);
         if(!isFirst) {
-            //Log.e("popup_version", "first");
             SharedPreferences.Editor editor = mPref.edit();
             editor.putBoolean("sendPopupFirst", true);
             editor.apply();
@@ -289,7 +288,6 @@ public class Send_Mail extends AppCompatActivity {
                     intent.putExtra("messageType", messageType);
                     setResult(RESULT_OK, intent);
                     finish();
-                    //finish();
                 }
             });
 
@@ -329,7 +327,6 @@ public class Send_Mail extends AppCompatActivity {
                     intent.putExtra("messageType", messageType);
                     setResult(RESULT_OK, intent);
                     finish();
-                    //finish();
                 }
             });
 
